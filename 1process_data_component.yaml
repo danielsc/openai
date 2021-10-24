@@ -1,0 +1,39 @@
+$schema: https://azuremlschemas.azureedge.net/preview/commandComponent.schema.json
+
+name: process-data
+
+environment: 
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ./conda.yml
+
+code:
+  local_path: ./src/process_data
+
+inputs:
+  raw_data: 
+    type: path
+  prompt_column: {type: string}
+  completion_column: {type: string}
+  train_test_split: 
+    type: number
+    default: 0.8
+  seed: 
+    type: integer
+    default: 42
+
+outputs:
+  train:
+    type: path
+  validation: 
+    type: path
+
+command: >- 
+  python process_data.py 
+    --raw_data ${{inputs.raw_data}} 
+    --prompt_column ${{inputs.prompt_column}}
+    --completion_column ${{inputs.completion_column}}
+    --train_output ${{outputs.train}} 
+    --validation_output ${{outputs.validation}} 
+    --seed ${{inputs.seed}}
+    --train_test_split ${{inputs.train_test_split}}
+

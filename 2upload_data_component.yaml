@@ -1,0 +1,25 @@
+$schema: https://azuremlschemas.azureedge.net/preview/commandComponent.schema.json
+
+name: openai-upload-data
+
+environment: 
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ./conda.yml
+
+code:
+  local_path: ./src/upload_data
+
+inputs:
+  folder_to_upload: 
+    type: path
+
+outputs:
+  upload_metadata:
+    type: path
+
+command: >- 
+  python upload_data.py 
+    --folder_to_upload ${{inputs.folder_to_upload}} 
+    --upload_metadata ${{outputs.upload_metadata}}
+
+
