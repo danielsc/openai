@@ -1,0 +1,57 @@
+2021/10/23 15:02:06 Got JobInfoJson from env
+2021/10/23 15:02:06 Starting App Insight Logger for task:  runTaskLet
+2021/10/23 15:02:06 Version: 3.0.01751.0001 Branch: 2021-10-18 Commit: 281a55e
+2021/10/23 15:02:06 Attempt 1 of http call to http://10.0.0.4:16384/sendlogstoartifacts/info
+2021/10/23 15:02:06 Send process info logs to master server succeeded
+2021/10/23 15:02:06 Attempt 1 of http call to http://10.0.0.4:16384/sendlogstoartifacts/status
+2021/10/23 15:02:06 Send process info logs to master server succeeded
+[2021-10-23T15:02:06.185747] Entering context manager injector.
+[2021-10-23T15:02:06.694634] context_manager_injector.py Command line Options: Namespace(inject=['ProjectPythonPath:context_managers.ProjectPythonPath', 'Dataset:context_managers.Datasets', 'RunHistory:context_managers.RunHistory', 'TrackUserError:context_managers.TrackUserError', 'UserExceptions:context_managers.UserExceptions'], invocation=['python fine_tune.py --training_data /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/training_data_0cd3ea36-cbea-4788-a22d-90345b44397b --validation_data /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/validation_data_872b6967-2d17-4f76-b84a-2159f08a7c12 --model ada --n_epochs 1 --batch_size 4 --learning_rate_multiplier 0.1 --use_packing True --classification_n_classes 5 --fine_tune_metadata /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/fine_tune_metadata_workspaceblobstore'])
+Script type = COMMAND
+[2021-10-23T15:02:06.698958] Command=python fine_tune.py --training_data /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/training_data_0cd3ea36-cbea-4788-a22d-90345b44397b --validation_data /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/validation_data_872b6967-2d17-4f76-b84a-2159f08a7c12 --model ada --n_epochs 1 --batch_size 4 --learning_rate_multiplier 0.1 --use_packing True --classification_n_classes 5 --fine_tune_metadata /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/fine_tune_metadata_workspaceblobstore
+[2021-10-23T15:02:06.699679] Entering Run History Context Manager.
+[2021-10-23T15:02:08.930374] Command Working Directory=/mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c
+[2021-10-23T15:02:08.930411] Starting Linux command : python fine_tune.py --training_data /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/training_data_0cd3ea36-cbea-4788-a22d-90345b44397b --validation_data /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/validation_data_872b6967-2d17-4f76-b84a-2159f08a7c12 --model ada --n_epochs 1 --batch_size 4 --learning_rate_multiplier 0.1 --use_packing True --classification_n_classes 5 --fine_tune_metadata /mnt/batch/tasks/shared/LS_root/jobs/ray/azureml/6dd8c2d3-a72b-44a1-a4e8-93d9d616642c/wd/fine_tune_metadata_workspaceblobstore
+loading key openai-key from keyvault
+2021/10/23 15:02:11 Not exporting to RunHistory as the exporter is either stopped or there is no data.
+Stopped: false
+OriginalData: 1
+FilteredData: 0.
+Submitting fine tune
+{'training_file': 'file-80hqHAuaScZ7lQ6AoGSbot3H', 'validation_file': 'file-ZbFtD0tkHwm8KYqKJvL7lnFe', 'model': 'ada', 'n_epochs': 1, 'batch_size': 4, 'learning_rate_multiplier': 0.1, 'use_packing': True, 'classification_n_classes': 5, 'compute_classification_metrics': True}
+response:
+{'id': 'ft-mxZrrZ2232eUAZgovUVknrxy', 'object': 'fine-tune', 'created_at': 1635001331, 'events': [{'object': 'fine-tune-event', 'created_at': 1635001332, 'level': 'info', 'message': 'Created fine-tune: ft-mxZrrZ2232eUAZgovUVknrxy'}], 'fine_tuned_model': None, 'hyperparams': {'batch_size': 4, 'classification_n_classes': 5, 'compute_classification_metrics': True, 'learning_rate_multiplier': 0.1, 'n_epochs': 1, 'prompt_loss_weight': 0.1, 'use_packing': True}, 'model': 'ada', 'organization_id': 'org-hTGGKhbVgQIQFEXlrcWgLHk9', 'result_files': [], 'status': 'pending', 'training_files': [{'id': 'file-80hqHAuaScZ7lQ6AoGSbot3H', 'object': 'file', 'bytes': 6063964, 'created_at': 1634938641, 'filename': './data/train/yelp.csv.jsonl', 'purpose': 'fine-tune', 'status': 'processed', 'status_details': None}], 'updated_at': 1635001332, 'validation_files': [{'id': 'file-ZbFtD0tkHwm8KYqKJvL7lnFe', 'object': 'file', 'bytes': 1516842, 'created_at': 1634938706, 'filename': './data/validation/yelp.csv.jsonl', 'purpose': 'fine-tune', 'status': 'processed', 'status_details': None}]}
+b'data: {"object": "fine-tune-event", "level": "info", "message": "Created fine-tune: ft-mxZrrZ2232eUAZgovUVknrxy", "created_at": 1635001332}'
+b''
+b'data: {"object": "fine-tune-event", "level": "info", "message": "Fine-tune enqueued. Queue number: 0", "created_at": 1635001336}'
+b''
+b'data: {"object": "fine-tune-event", "level": "info", "message": "Fine-tune started", "created_at": 1635001339}'
+b''
+b'data: {"object": "fine-tune-event", "level": "info", "message": "Completed epoch 1/1", "created_at": 1635001490}'
+b''
+b'data: {"object": "fine-tune-event", "level": "info", "message": "Uploaded model: ada:ft-msft-finetuning-2-2021-10-23-15-06-15", "created_at": 1635001577}'
+b''
+b'data: {"object": "fine-tune-event", "level": "info", "message": "Uploaded result file: file-RRg3o0iVCEBgoc16Y0RNZ5XV", "created_at": 1635001580}'
+b''
+b'data: {"object": "fine-tune-event", "level": "info", "message": "Fine-tune succeeded", "created_at": 1635001581}'
+b''
+b'data: [DONE]'
+b''
+fine_tune ended with status: succeeded
+done...
+[2021-10-23T15:06:25.877524] Command finished with return code 0
+
+
+[2021-10-23T15:06:25.877764] The experiment completed successfully. Finalizing run...
+Cleaning up all outstanding Run operations, waiting 900.0 seconds
+3 items cleaning up...
+Cleanup took 0.1534416675567627 seconds
+[2021-10-23T15:06:26.141107] Finished context manager injector.
+2021/10/23 15:06:29 Attempt 1 of http call to http://10.0.0.4:16384/sendlogstoartifacts/status
+2021/10/23 15:06:29 Send process info logs to master server succeeded
+2021/10/23 15:06:29 Not exporting to RunHistory as the exporter is either stopped or there is no data.
+Stopped: false
+OriginalData: 2
+FilteredData: 0.
+2021/10/23 15:06:29 Process Exiting with Code:  0
+2021/10/23 15:06:29 All App Insights Logs was sent successfully or the close timeout of 10 was reached

@@ -1,0 +1,22 @@
+$schema: https://azuremlschemas.azureedge.net/preview/commandJob.schema.json
+command: |
+  #!/bin/bash 
+
+  _term() { 
+    echo "Caught SIGTERM signal!" 
+    kill -TERM "$child" 2>/dev/null
+  }
+
+  trap _term SIGTERM
+
+  echo "Doing some initial work...";
+  python test_sigterm.py > logs/output.log &
+
+  child=$! 
+  wait "$child"
+
+code:
+  local_path: ./src
+environment:
+  image: python
+compute: azureml:cpu-cluster

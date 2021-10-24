@@ -1,0 +1,41 @@
+$schema: https://azuremlschemas.azureedge.net/preview/commandJob.schema.json
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ./conda.yml
+
+code:
+  local_path: ./src/fine_tune
+
+inputs:
+  training_data:
+    dataset:
+      local_path: ./data/3train_uploaded
+
+  validation_data:
+    dataset:
+      local_path: ./data/3validation_uploaded
+  
+  model: ada
+  n_epochs: 1
+  batch_size: 4
+  learning_rate_multiplier: 0.1
+  use_packing: True
+  classification_n_classes: 5
+
+outputs:
+  fine_tune_metadata:
+    
+command: >-
+  python fine_tune.py
+    --training_data ${{inputs.training_data}}
+    --validation_data ${{inputs.validation_data}}
+    --model ${{inputs.model}}
+    --n_epochs ${{inputs.n_epochs}}
+    --batch_size ${{inputs.batch_size}}
+    --learning_rate_multiplier ${{inputs.learning_rate_multiplier}}
+    --use_packing ${{inputs.use_packing}}
+    --classification_n_classes ${{inputs.classification_n_classes}}
+    --fine_tune_metadata ${{outputs.fine_tune_metadata}}
+    
+compute: azureml:cpu-cluster

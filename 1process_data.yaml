@@ -1,0 +1,35 @@
+$schema: https://azuremlschemas.azureedge.net/preview/commandJob.schema.json
+
+environment: 
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ./conda.yml
+
+code:
+  local_path: ./src/process_data
+
+inputs:
+  raw_data: 
+    dataset: azureml:yelp_raw:1
+  prompt_column: text
+  completion_column: stars
+  train_test_split: 0.8
+  seed: 172983
+
+outputs:
+  train:
+    mode: mount
+  validation: 
+    mode: mount
+
+compute: azureml:cpu-cluster
+
+command: >- 
+  python process_data.py 
+    --raw_data ${{inputs.raw_data}} 
+    --prompt_column ${{inputs.prompt_column}}
+    --completion_column ${{inputs.completion_column}}
+    --train_output ${{outputs.train}} 
+    --validation_output ${{outputs.validation}} 
+    --seed ${{inputs.seed}}
+    --train_test_split ${{inputs.train_test_split}}
+
