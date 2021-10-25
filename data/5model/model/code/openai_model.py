@@ -10,6 +10,7 @@ def load_yaml(filename):
 class OpenAIModel(mlflow.pyfunc.PythonModel):
   def load_context(self, context):
     fine_tune = load_yaml(context.artifacts['fine_tune'])
+    self.BATCH_SIZE = 20
     self.model = fine_tune['fine_tuned_model']
     self.api_key = os.getenv("OPENAI_API_KEY")
     self.url = f"https://api.openai.com/v1/engines/{self.model.split(':')[0]}-shared-msft/completions"
@@ -18,7 +19,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     if self.api_key is None or not self.api_key.startswith("sk"):
       raise Exception("Please set env var OPENAI_API_KEY")
 
-  def predict(self, context, model_input: pd.DataFrame):
+  def call_oai_endpoint(self, context, model_input: pd.DataFrame):
     print(model_input)
     payload = {
       "prompt": list(model_input.prompt.values),
@@ -37,3 +38,8 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     print("DEBUG: ", data)
     print("\n\n\n")
     return [row['text'] for row in data['choices']]
+
+  def predict(self, context, model_input: pd.DataFrame):
+    ## need to batch to 20 -- that is the max that the service accepts
+    #list_df = [df[i:i+n] for i in range(0,df.shape[0],n)]
+    return self.call_oai_endpoint(self, context, model_input)
