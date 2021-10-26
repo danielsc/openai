@@ -10,4 +10,4 @@ flavors:
     loader_module: mlflow.pyfunc.model
     python_model: python_model.pkl
     python_version: 3.8.12
-utc_time_created: '2021-10-25 16:35:05.836617'
+utc_time_created: '2021-10-26 16:53:37.428576'

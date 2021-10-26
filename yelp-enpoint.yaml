@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/preview/managedOnlineEndpoint.schema.json
+name: cli-yelp-endpoint
+auth_mode: key
+traffic:
+  blue: 90
+  red: 10

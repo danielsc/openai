@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/preview/managedOnlineDeployment.schema.json
+name: openai-deployment-lean
+endpoint_name: cli-yelp-endpoint
+model: azureml:yelp-classification-using-openai:4
+instance_type: Standard_F2s_v2
+instance_count: 1
