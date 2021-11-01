@@ -20,7 +20,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     self.model = fine_tune['fine_tuned_model']
     #self.api_key = os.getenv("OPENAI_API_KEY")
     self.api_key = "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"
-    self.url = f"https://api.openai.com/v1/engines/{self.model.split(':')[0]}-shared-msft/completions"
+    self.url = f"https://api.openai.com/v1/engines/fine-tunes-{self.model.split(':')[0]}-msft/completions"
     print("moodel", self.model)
     print("url", self.url)
     if self.api_key is None or not self.api_key.startswith("sk"):

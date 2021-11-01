@@ -2,5 +2,5 @@ $schema: https://azuremlschemas.azureedge.net/preview/managedOnlineEndpoint.sche
 name: cli-yelp-endpoint
 auth_mode: key
 traffic:
-  blue: 90
-  red: 10
+  openai-deployment: 0
+  openai-deployment-5: 100
