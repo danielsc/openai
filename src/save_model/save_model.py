@@ -1,8 +1,11 @@
+from pandas.core.frame import DataFrame
 from openai_model import OpenAIModel
 import shutil, mlflow
+import mlflow.models 
 import argparse
 import pandas as pd
 import yaml
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--fine_tune", default="../../data/4fine_tune")
@@ -19,7 +22,7 @@ def save_yaml(content, filename):
    with open(filename, encoding='utf-8', mode='w') as fh:
       yaml.dump(content, fh)
 
-def save_pyfunc_model(fine_tune, path):
+def save_pyfunc_model(fine_tune: str, path: str):
   artifacts = {
     'fine_tune': fine_tune
   }
@@ -28,15 +31,16 @@ def save_pyfunc_model(fine_tune, path):
   except:
     pass
   model = OpenAIModel()
-  mlflow.pyfunc.save_model(path, python_model=model, artifacts=artifacts,
-    code_path=['openai_model.py'], conda_env='conda.yml')
 
-#fine_tune = load_yaml(args.fine_tune + "/MLArtifact.yaml")
+  df = DataFrame({"text": ["foo", "bar", "baz"]})
+  signature = mlflow.models.infer_signature(model_input=df, model_output=np.array([3,4,5]))
+
+  mlflow.pyfunc.save_model(path, python_model=model, artifacts=artifacts,
+    code_path=['openai_model.py'], conda_env='conda.yml', signature=signature)
 
 save_pyfunc_model(args.fine_tune + "/MLArtifact.yaml", args.model + "/model")
 
 if not args.test_data is None:
-  model = mlflow.pyfunc.load_model(args.model + "/model")
-  import pandas as pd
   df = pd.read_csv(args.test_data)
+  model = mlflow.pyfunc.load_model(args.model + "/model")
   print(model.predict(df[:27]))

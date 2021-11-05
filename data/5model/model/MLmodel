@@ -10,4 +10,7 @@ flavors:
     loader_module: mlflow.pyfunc.model
     python_model: python_model.pkl
     python_version: 3.8.12
-utc_time_created: '2021-11-01 04:40:15.805106'
+signature:
+  inputs: '[{"name": "text", "type": "string"}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+utc_time_created: '2021-11-05 23:08:06.055246'
