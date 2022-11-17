@@ -1,0 +1,25 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+name: openai-deploy-model
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ./conda.yml
+
+code: ./src/save_model
+
+inputs:
+  fine_tune:
+    type: uri_folder
+
+outputs:
+  deploayment:
+    type: path
+    
+command: >-
+  python deploy.py
+  --aoai_resource_name ${{inputs.aoai_resource_name}}
+  --api_version ${{inputs.api_version}}
+  --fine_tune_metadata ${{inputs.fine_tune_metadata}}
+  --deployment ${{outputs.deployment}}
+
