@@ -1,6 +1,0 @@
-$schema: https://azuremlschemas.azureedge.net/preview/managedOnlineEndpoint.schema.json
-name: cli-yelp-endpoint
-auth_mode: key
-traffic:
-  openai-deployment: 0
-  openai-deployment-5: 100

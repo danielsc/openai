@@ -1,4 +1,4 @@
-$schema: https://azuremlschemas.azureedge.net/preview/commandComponent.schema.json
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
 
 name: openai-fine-tune
 
@@ -6,15 +6,14 @@ environment:
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
   conda_file: ./conda.yml
 
-code:
-  local_path: ./src/fine_tune
+code: ./src/fine_tune
 
 inputs:
   training_data:
-    type: path
+    type: uri_folder
 
   validation_data:
-    type: path
+    type: uri_folder
   
   model:
     type: string
@@ -29,27 +28,32 @@ inputs:
   learning_rate_multiplier: 
     type: number
     default: 0.1
-  use_packing: 
-    type: boolean
-    default: true
   classification_n_classes: 
     type: integer
     default: 5
 
+  aoai_endpoint: 
+    type: string
+    
+  api_version: 
+    type: string
+    default: 2022-06-01-preview
+
 outputs:
   fine_tune_metadata:
-    type: path
     
 command: >-
   python fine_tune.py
-    --training_data ${{inputs.training_data}}
-    --validation_data ${{inputs.validation_data}}
-    --model ${{inputs.model}}
-    --n_epochs ${{inputs.n_epochs}}
-    --batch_size ${{inputs.batch_size}}
-    --learning_rate_multiplier ${{inputs.learning_rate_multiplier}}
-    --use_packing ${{inputs.use_packing}}
-    --classification_n_classes ${{inputs.classification_n_classes}}
-    --fine_tune_metadata ${{outputs.fine_tune_metadata}}
+  --training_data ${{inputs.training_data}}
+  --validation_data ${{inputs.validation_data}}
+  --model ${{inputs.model}}
+  --n_epochs ${{inputs.n_epochs}}
+  --batch_size ${{inputs.batch_size}}
+  --learning_rate_multiplier ${{inputs.learning_rate_multiplier}}
+  --classification_n_classes ${{inputs.classification_n_classes}}
+  --fine_tune_metadata ${{outputs.fine_tune_metadata}}
+  --aoai_endpoint ${{inputs.aoai_endpoint}}
+  --api_version ${{inputs.api_version}}
+    
     
 

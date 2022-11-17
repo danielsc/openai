@@ -3,3 +3,4 @@
 /mlruns
 /oai-cli-prep
 /tmp
+**/__pycache__/**

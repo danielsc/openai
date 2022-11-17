@@ -1,17 +1,16 @@
-$schema: https://azuremlschemas.azureedge.net/preview/commandComponent.schema.json
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
 
-name: process-data
+name: aoai_process_data
 
 environment: 
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
   conda_file: ./conda.yml
 
-code:
-  local_path: ./src/process_data
+code: ./src/process_data
 
 inputs:
   raw_data: 
-    type: path
+    type: uri_file
   prompt_column: {type: string}
   completion_column: {type: string}
   train_test_split: 
@@ -23,17 +22,16 @@ inputs:
 
 outputs:
   train:
-    type: path
+    type: uri_file
   validation: 
-    type: path
+    type: uri_file
 
 command: >- 
   python process_data.py 
-    --raw_data ${{inputs.raw_data}} 
-    --prompt_column ${{inputs.prompt_column}}
-    --completion_column ${{inputs.completion_column}}
-    --train_output ${{outputs.train}} 
-    --validation_output ${{outputs.validation}} 
-    --seed ${{inputs.seed}}
-    --train_test_split ${{inputs.train_test_split}}
-
+  --raw_data ${{inputs.raw_data}} 
+  --prompt_column ${{inputs.prompt_column}}
+  --completion_column ${{inputs.completion_column}}
+  --train_output ${{outputs.train}} 
+  --validation_output ${{outputs.validation}} 
+  --seed ${{inputs.seed}}
+  --train_test_split ${{inputs.train_test_split}}

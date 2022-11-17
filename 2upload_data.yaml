@@ -1,16 +1,15 @@
-$schema: https://azuremlschemas.azureedge.net/preview/commandJob.schema.json
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 
 environment: 
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
   conda_file: ./conda.yml
 
-code:
-  local_path: ./src/upload_data
+code: ./src/upload_data
 
 inputs:
-  folder_to_upload:
-    dataset:
-      local_path: ./data/2train
+  file_to_upload:
+    type: uri_file
+    path: ./data/2train/yelp_train.jsonl
 
 outputs:
   upload_metadata:
@@ -19,7 +18,7 @@ compute: azureml:cpu-cluster
 
 command: >- 
   python upload_data.py 
-    --folder_to_upload ${{inputs.folder_to_upload}} 
-    --upload_metadata ${{outputs.upload_metadata}}
+  --file_to_upload ${{inputs.file_to_upload}} 
+  --upload_metadata ${{outputs.upload_metadata}}
 
 

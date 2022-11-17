@@ -1,8 +1,8 @@
-bytes: 6063964
-created_at: 1634938641
-filename: ./data/train/yelp.csv.jsonl
-id: file-80hqHAuaScZ7lQ6AoGSbot3H
+bytes: 19390
+created_at: 1668094594
+filename: yelp_train.jsonl
+id: file-18f11c7c9d1f4bc0a9485a74d0d42cee
 object: file
 purpose: fine-tune
-status: uploaded
-status_details: null
+status: notRunning
+updated_at: 1668094594

@@ -1,8 +1,8 @@
-bytes: 1516842
-created_at: 1634938706
-filename: ./data/validation/yelp.csv.jsonl
-id: file-ZbFtD0tkHwm8KYqKJvL7lnFe
+bytes: 7694
+created_at: 1668094726
+filename: yelp_validation.jsonl
+id: file-7ae9210b4a034f0eaf9f8156c1c05305
 object: file
 purpose: fine-tune
-status: uploaded
-status_details: null
+status: notRunning
+updated_at: 1668094726

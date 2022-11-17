@@ -8,4 +8,4 @@ dependencies:
   - pip:
     - openai
     - azureml-mlflow
-    - azureml-sdk
+    - azureml-core

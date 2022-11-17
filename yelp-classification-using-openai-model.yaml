@@ -1,6 +1,0 @@
-$schema: https://azuremlschemas.azureedge.net/preview/model.schema.json
-name: yelp-classification-using-openai
-version: 6
-model_format: mlflow
-# To register a model, specify the local path for the saved model
-local_path: ./data/5model/model/

@@ -1,0 +1,23 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: openai-save-model
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ./conda.yml
+
+code: ./src/save_model
+
+inputs:
+  fine_tune:
+    type: path
+
+outputs:
+  model:
+    type: path
+    
+command: >-
+  python save_model.py
+    --fine_tune ${{inputs.fine_tune}}
+    --model ${{outputs.model}}
+

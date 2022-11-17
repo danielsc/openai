@@ -3,17 +3,10 @@ Changes required in AML:
 - enable the injection of keys into environment variables (both job and deployment)
 - scenario polishing, esp. pipelines/designer/components
 
-Usability improvements
-- enable the download of named outputs from a command job
-- vscode to help checking ${{inputs.foo}} expressions
-- yaml schema: outputs don't account for type: 'none'
-- az ml job create --stream gives no useful logs -- in fact, no logs at all
-
-longer term:
-- need file as outputs, not just folders -- type object, really
-
-MLFlow:
-- MLflow.save_model insists on creating the folder the model is saved to
-
-Changes to a service:
+Changes to a AOAI service:
 - provide metrics incrementally to enable early-stopping through hyperdrive
+
+Issues:
+- Event Streaming is not working through streaming REST API (connection closes after 2 minutes)
+- Job cancellation not working through rest but through Python API (didn't debug deeply)
+- Where is the reference documentation for the Python API?
