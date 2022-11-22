@@ -26,6 +26,7 @@ inputs:
 outputs:
   fine_tune_metadata:
     
+    
 command: >-
   python fine_tune.py
   --training_data ${{inputs.training_data}}
