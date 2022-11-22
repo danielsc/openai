@@ -101,7 +101,7 @@ def main():
 
     args = parser.parse_args()
 
-    openai.api_key = "2dd91e175b054f668f3b43706f449af6" # load_api_key()
+    openai.api_key = load_api_key()
     openai.api_base = args.aoai_endpoint
     openai.api_type = 'azure'  # hard coding for now
     openai.api_version = args.api_version
