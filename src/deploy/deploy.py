@@ -94,14 +94,15 @@ def get_finetune_id(path :str):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--aoai_resource_name", default="aoai")
+    parser.add_argument("--aoai_endpoint", default="https://aoai.openai.azure.com/")
     parser.add_argument("--api_version", default="2022-06-01-preview")
     parser.add_argument("--fine_tune_metadata", default="./data/4fine_tune")
+    parser.add_argument("--deployment_metadata", default="./data/5deployment")
 
     args = parser.parse_args()
 
-    openai.api_key = load_api_key()
-    openai.api_base = url = f"https://{args.aoai_resource_name}.openai.azure.com/"
+    openai.api_key = "2dd91e175b054f668f3b43706f449af6" # load_api_key()
+    openai.api_base = args.aoai_endpoint
     openai.api_type = 'azure'  # hard coding for now
     openai.api_version = args.api_version
 
@@ -109,12 +110,17 @@ def main():
 
     print(f"entering AOAI Deployer")
     AOAI_deployer = AOAIDeployer(finetune_job_id=finetune_job_id)
-    deployment = AOAI_deployer.deploy_job()
+    deployment = AOAI_deployer.deploy_job().to_dict_recursive()
     AOAI_deployment_cur_status = AOAI_deployer.check_deployment_status()
     print(f"retrieved AOAI_deployment_cur_status: {AOAI_deployment_cur_status}")
     if AOAI_deployment_cur_status in [AOAI_DEPLOYMENT_CANCEL_STATUS, AOAI_DEPLOYMENT_FAILED_STATUS]:
         raise Exception(f"the deployment is {AOAI_deployment_cur_status} in server side, job id: {deployment['id']}, terminal status:\n{openai.Deployment.retrieve(id=deployment['id'])}")
     curr_deployment_id = deployment['id']
+    print(f"curr_deployment_id: {curr_deployment_id}")
+    with open(args.deployment_metadata + "/MLArtifact.yaml", "w") as f:
+        yaml.safe_dump(deployment, f)
+
+    print(deployment)
 
 
 if __name__ == "__main__":
