@@ -1,72 +1,10 @@
-created_at: 1635001331
-events:
-- created_at: 1635001332
-  level: info
-  message: 'Created fine-tune: ft-mxZrrZ2232eUAZgovUVknrxy'
-  object: fine-tune-event
-- created_at: 1635001336
-  level: info
-  message: 'Fine-tune enqueued. Queue number: 0'
-  object: fine-tune-event
-- created_at: 1635001339
-  level: info
-  message: Fine-tune started
-  object: fine-tune-event
-- created_at: 1635001490
-  level: info
-  message: Completed epoch 1/1
-  object: fine-tune-event
-- created_at: 1635001577
-  level: info
-  message: 'Uploaded model: ada:ft-msft-finetuning-2-2021-10-23-15-06-15'
-  object: fine-tune-event
-- created_at: 1635001580
-  level: info
-  message: 'Uploaded result file: file-RRg3o0iVCEBgoc16Y0RNZ5XV'
-  object: fine-tune-event
-- created_at: 1635001581
-  level: info
-  message: Fine-tune succeeded
-  object: fine-tune-event
-fine_tuned_model: ada:ft-msft-finetuning-2-2021-10-23-15-06-15
-hyperparams:
-  batch_size: 4
-  classification_n_classes: 5
-  compute_classification_metrics: true
-  learning_rate_multiplier: 0.1
-  n_epochs: 1
-  prompt_loss_weight: 0.1
-  use_packing: true
-id: ft-mxZrrZ2232eUAZgovUVknrxy
-model: ada
-object: fine-tune
-organization_id: org-hTGGKhbVgQIQFEXlrcWgLHk9
-result_files:
-- bytes: 11660
-  created_at: 1635001578
-  filename: compiled_results.csv
-  id: file-RRg3o0iVCEBgoc16Y0RNZ5XV
-  object: file
-  purpose: fine-tune-results
-  status: processed
-  status_details: null
-status: succeeded
-training_files:
-- bytes: 6063964
-  created_at: 1634938641
-  filename: ./data/train/yelp.csv.jsonl
-  id: file-80hqHAuaScZ7lQ6AoGSbot3H
-  object: file
-  purpose: fine-tune
-  status: processed
-  status_details: null
-updated_at: 1635001581
-validation_files:
-- bytes: 1516842
-  created_at: 1634938706
-  filename: ./data/validation/yelp.csv.jsonl
-  id: file-ZbFtD0tkHwm8KYqKJvL7lnFe
-  object: file
-  purpose: fine-tune
-  status: processed
-  status_details: null
+created_at: 1668799707
+id: deployment-6964610a5c2d45f98213953ecd23c83a
+model: ada.ft-c4a8c9ed60c847749d07263c29ab887e
+object: deployment
+owner: organization-owner
+scale_settings:
+  scale_type: standard
+status: running
+updated_at: 1668799707
+endpoint: https://aoai.openai.azure.com/

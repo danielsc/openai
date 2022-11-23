@@ -1,0 +1,10 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: default
+endpoint_name: aoai-endpoint
+instance_type: Standard_DS4_v2
+instance_count: 1
+model:
+  type: mlflow_model
+  path: ./data/6model/model
+environment_variables:
+  OPENAI_API_KEY: <<add_your_secret_here>>

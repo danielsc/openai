@@ -7,3 +7,4 @@ scale_settings:
   scale_type: standard
 status: running
 updated_at: 1668799707
+endpoint: https://aoai.openai.azure.com/

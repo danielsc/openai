@@ -10,11 +10,11 @@ code: ./src/save_model
 
 inputs:
   fine_tune:
-    type: path
+    type: uri_folder
 
 outputs:
   model:
-    type: path
+    type: mlflow_model
     
 command: >-
   python save_model.py

@@ -111,6 +111,7 @@ def main():
     print(f"entering AOAI Deployer")
     AOAI_deployer = AOAIDeployer(finetune_job_id=finetune_job_id)
     deployment = AOAI_deployer.deploy_job().to_dict_recursive()
+    deployment['endpoint'] = openai.api_base 
     AOAI_deployment_cur_status = AOAI_deployer.check_deployment_status()
     print(f"retrieved AOAI_deployment_cur_status: {AOAI_deployment_cur_status}")
     if AOAI_deployment_cur_status in [AOAI_DEPLOYMENT_CANCEL_STATUS, AOAI_DEPLOYMENT_FAILED_STATUS]:

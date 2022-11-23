@@ -1,19 +1,19 @@
-$schema: https://azuremlschemas.azureedge.net/preview/commandJob.schema.json
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 
 environment:
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
   conda_file: ./conda.yml
 
-code:
-  local_path: ./src/save_model
+code: ./src/save_model
 
 inputs:
   fine_tune:
-    dataset:
-      local_path: ./data/4fine_tune
+    type: uri_folder
+    path: ./data/4fine_tune/
 
 outputs:
   model:
+    type: mlflow_model
     
 command: >-
   python save_model.py

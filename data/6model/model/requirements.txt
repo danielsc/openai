@@ -1,4 +1,4 @@
 mlflow
 openai
 azureml-mlflow
-azureml-sdk
+azureml-core

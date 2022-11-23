@@ -1,8 +1,8 @@
 bytes: 7694
-created_at: 1668094726
-filename: yelp_validation.jsonl
-id: file-7ae9210b4a034f0eaf9f8156c1c05305
+created_at: 1669220184
+filename: yelp_validation.jsonl.jsonl
+id: file-0835756a25de48f69ba6944902abf4cb
 object: file
 purpose: fine-tune
 status: notRunning
-updated_at: 1668094726
+updated_at: 1669220184
