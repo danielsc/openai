@@ -36,7 +36,13 @@ az ml job create -f 0pipeline.yaml
 ```
 ![](images/pipeline.png)
 
-6. Only if you want to run the python code locally: Create the conda environment
+Only if you want to run the python code locally:
+6. Create the conda environment
 ```shell
 conda env create -f conda.yml
+conda activate openai
+```
+7. Set the OPENAI_API_KEY environment variable
+```shell
+export OPENAI_API_KEY=<your key from step 1 above>
 ```
