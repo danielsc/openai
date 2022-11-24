@@ -25,4 +25,18 @@ For AzureML to be able to access your Azure OpenAI endpoint, you need to add the
 4. Add a new secret with the name `openai-key` and the value of the key
 ![](images/keyvault3.jpg)
 ![](images/keyvault4.jpg)
+5. Create a compute cluster named `cpu-cluster`
+```shell
+az ml compute create --name cpu-cluster --type amlcompute --min-instances 0 --max-instances 4 --size STANDARD_D2_V2 --idle-time-before-scale-down 3600
+```
 
+7. Run the full pipeline
+```shell
+az ml job create -f 0pipeline.yaml
+```
+![](images/pipeline.png)
+
+6. Only if you want to run the python code locally: Create the conda environment
+```shell
+conda env create -f conda.yml
+```
