@@ -13,7 +13,7 @@ inputs:
 
   test_data:
     type: uri_file
-    path: ./data/7score/yelp_text_small.csv
+    path: ./data/1raw/yelp_test.csv
 
 outputs:
   model:
