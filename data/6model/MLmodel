@@ -1,0 +1,18 @@
+flavors:
+  python_function:
+    artifacts:
+      deployment:
+        path: artifacts/MLArtifact.yaml
+        uri: ../../data/5deployment/MLArtifact.yaml
+    cloudpickle_version: 2.2.0
+    code: code
+    env: conda.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.8.15
+mlflow_version: 1.30.0
+model_uuid: c24fc411e3184ed785d792fbdde4c221
+signature:
+  inputs: '[{"name": "text", "type": "string"}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+utc_time_created: '2022-11-24 13:31:26.164711'

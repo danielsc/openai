@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
 
-name: openai-save-model
+name: openai_save_model
 
 environment:
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
@@ -9,8 +9,11 @@ environment:
 code: ./src/save_model
 
 inputs:
-  fine_tune:
+  deployment:
     type: uri_folder
+
+  test_data:
+    type: uri_file
 
 outputs:
   model:
@@ -18,6 +21,7 @@ outputs:
     
 command: >-
   python save_model.py
-    --fine_tune ${{inputs.fine_tune}}
-    --model ${{outputs.model}}
+  --deployment ${{inputs.deployment}}
+  --model ${{outputs.model}}
+  --test_data ${{inputs.test_data}}
 

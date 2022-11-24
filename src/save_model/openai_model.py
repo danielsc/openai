@@ -13,6 +13,20 @@ def parse_stars(completion: str) -> int:
   except:
     return 0
 
+def load_api_key(keyname = "openai-key"):
+  secret_value = os.getenv("OPENAI_API_KEY")
+  if secret_value is None:
+    try:
+      from azureml.core.run import _OfflineRun
+      from azureml.core import Run
+      run = Run.get_context()
+      secret_value = run.get_secret(name=keyname)
+    except Exception as e:
+      Exception("No OPENAI_API_KEY found in environment variables or keyvault", e)
+
+  return secret_value
+
+
 class OpenAIModel(mlflow.pyfunc.PythonModel):
   def load_context(self, context):
     deployment = load_yaml(context.artifacts['deployment'])
@@ -20,15 +34,14 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     self.api_version="2022-06-01-preview" # hardcode for now
     self.deployment = deployment['id']
     self.endpoint = deployment['endpoint']
-    self.api_key = os.getenv("OPENAI_API_KEY")
+    self.api_key = load_api_key(keyname = "openai-key")
 
     if self.api_key is None:
       print("key is ", self.api_key)
       raise Exception("Please set env var OPENAI_API_KEY")
 
-    print("api_key", self.api_key)
     self.url = self.endpoint + "openai/deployments/" + self.deployment + "/completions?api-version=" + self.api_version
-    print("url", self.url)
+    print(f"url: {self.url}")
 
   def call_oai_endpoint(self, context, model_input: pd.DataFrame):
     payload = {
@@ -67,6 +80,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     return [parse_stars(completion) for completion in scores]
   
 if __name__=="__main__":
+  # just for testing
   import pathlib
   this_dir = pathlib.Path(os.path.realpath(__file__)).parent.resolve()
   context = mlflow.pyfunc.PythonModelContext({'deployment':f'{this_dir}/../artifacts/MLArtifact.yaml'})

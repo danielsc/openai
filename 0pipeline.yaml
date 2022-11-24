@@ -1,0 +1,97 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+
+settings: 
+  default_compute: azureml:cpu-cluster
+
+inputs:
+  raw_data:
+    type: uri_file
+    path: ./data/1raw/yelp_small.csv
+  prompt_column: text
+  completion_column: stars
+  train_test_split: 0.8
+  seed: 172983
+  model: ada
+  n_epochs: 1
+  batch_size: 4
+  learning_rate_multiplier: 0.1
+  classification_n_classes: 5
+  aoai_endpoint: https://aoai.openai.azure.com/
+  api_version: 2022-06-01-preview
+  test_data: 
+    type: uri_file
+    path: ./data/1raw/yelp_test.csv
+
+outputs: 
+  model:
+    type: mlflow_model
+    
+jobs:
+  process_data:
+    type: command
+    component: ./1process_data_component.yaml
+    inputs:
+      raw_data: ${{parent.inputs.raw_data}}
+      prompt_column: ${{parent.inputs.prompt_column}}
+      completion_column: ${{parent.inputs.completion_column}}
+      train_test_split: ${{parent.inputs.train_test_split}}
+      seed: ${{parent.inputs.seed}}
+    outputs:
+      train: 
+      validation: 
+    compute: azureml:cpu-cluster
+
+  upload_data_train:
+    type: command
+    component: ./2upload_data_component.yaml
+    inputs:
+      file_to_upload: ${{parent.jobs.process_data.outputs.train}}
+    outputs:
+      upload_metadata:
+
+  upload_data_validation:
+    type: command
+    component: ./2upload_data_component.yaml
+    inputs:
+      file_to_upload: ${{parent.jobs.process_data.outputs.validation}}
+    outputs:
+      upload_metadata:
+
+  fine_tune:
+    type: command
+    component: ./3fine_tune_component.yaml
+    inputs:
+      training_data: ${{parent.jobs.upload_data_train.outputs.upload_metadata}}
+      validation_data: ${{parent.jobs.upload_data_validation.outputs.upload_metadata}}
+      model: ${{parent.inputs.model}}
+      n_epochs: ${{parent.inputs.n_epochs}}
+      batch_size: ${{parent.inputs.batch_size}}
+      learning_rate_multiplier: ${{parent.inputs.learning_rate_multiplier}}
+      classification_n_classes: ${{parent.inputs.classification_n_classes}}
+      aoai_endpoint: ${{parent.inputs.aoai_endpoint}}
+      api_version: ${{parent.inputs.api_version}}
+    outputs:
+      fine_tune_metadata:
+
+  deploy:
+    type: command
+    component: ./4deploy_component.yaml
+    inputs:
+      fine_tune: ${{parent.jobs.fine_tune.outputs.fine_tune_metadata}}
+      aoai_endpoint: ${{parent.inputs.aoai_endpoint}}
+      api_version: ${{parent.inputs.api_version}}
+    outputs:
+      deployment: 
+
+  save_model:
+    type: command
+    component: ./5save_model_component.yaml
+    inputs:
+      deployment: ${{parent.jobs.deploy.outputs.deployment}}
+      aoai_endpoint: ${{parent.inputs.aoai_endpoint}}
+      api_version: ${{parent.inputs.api_version}}
+      test_data: ${{parent.inputs.test_data}}
+    outputs:
+      model: ${{parent.outputs.model}}
+

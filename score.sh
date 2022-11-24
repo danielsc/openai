@@ -1,1 +1,1 @@
-mlflow models predict -m data/6model/model -i data/7score/yelp_text_small.csv -t csv --env-manager conda
+mlflow models predict -m data/6model -i data/7score/yelp_text_small.csv -t csv --env-manager conda

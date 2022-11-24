@@ -1,75 +1,62 @@
-created_at: 1668083643
+created_at: 1669303046
 events:
-- created_at: 1668083645
+- created_at: 1669303047
   level: info
   message: Job enqueued. Waiting for jobs ahead to complete.
   object: fine-tune-event
-- created_at: 1668083736
+- created_at: 1669303142
   level: info
   message: Job started.
   object: fine-tune-event
-- created_at: 1668083782
+- created_at: 1669303198
   level: info
   message: Preprocessing started.
   object: fine-tune-event
-- created_at: 1668090086
+- created_at: 1669303431
   level: info
   message: Training started.
   object: fine-tune-event
-- created_at: 1668090215
+- created_at: 1669303553
   level: info
-  message: 'Created results file: file-26d9f2390a28485c8f0dd959d7cd1e73'
+  message: 'Created results file: file-7375b5e61fd640f89a0d709f93fe6840'
   object: fine-tune-event
-- created_at: 1668090913
+- created_at: 1669303726
   level: info
   message: Postprocessing started.
   object: fine-tune-event
-- created_at: 1668103545
-  level: info
-  message: Job succeeded.
-  object: fine-tune-event
-- created_at: 1668090215
-  level: info
-  message: 'Completed results file: file-26d9f2390a28485c8f0dd959d7cd1e73'
-  object: fine-tune-event
-- created_at: 1668103601
-  level: info
-  message: 'Training hours billed: 0.250'
-  object: fine-tune-event
-fine_tuned_model: ada.ft-c4a8c9ed60c847749d07263c29ab887e
 hyperparams:
-  batch_size: 16
+  batch_size: 1
   compute_classification_metrics: false
   learning_rate_multiplier: 0.2
   n_epochs: 2
   prompt_loss_weight: 0.1
-id: ft-c4a8c9ed60c847749d07263c29ab887e
+id: ft-e19ea0fbbf7a486083e6ef3491ff230c
 model: ada
 object: fine-tune
 result_files:
-- bytes: 58110
-  created_at: 1668090215
+- bytes: 2836
+  created_at: 1669303553
   filename: results.csv
-  id: file-26d9f2390a28485c8f0dd959d7cd1e73
+  id: file-7375b5e61fd640f89a0d709f93fe6840
   object: file
   purpose: fine-tune-results
-  status: succeeded
-  updated_at: 1668103601
-status: succeeded
+  status: running
+  updated_at: 1669304203
+status: running
 training_files:
-- created_at: 1668083624
-  filename: yelp.csv.jsonl
-  id: file-21ae9bd1b7604f389faa209fd516dbf6
+- created_at: 1668094594
+  filename: yelp_train.jsonl
+  id: file-18f11c7c9d1f4bc0a9485a74d0d42cee
   object: file
   purpose: fine-tune
   status: succeeded
-  updated_at: 1668083628
-updated_at: 1668103601
+  updated_at: 1668094599
+updated_at: 1669304203
 validation_files:
-- created_at: 1668083583
-  filename: yelp.csv.jsonl
-  id: file-c1f6fa25231e42759291a1d6fcf679f3
+- created_at: 1669302990
+  filename: yelp_validation.jsonl.jsonl
+  id: file-f6ed1943b2764f1fbfbc452ebe2b2e45
   object: file
   purpose: fine-tune
   status: succeeded
-  updated_at: 1668083586
+  updated_at: 1669302993

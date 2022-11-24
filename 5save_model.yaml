@@ -7,9 +7,13 @@ environment:
 code: ./src/save_model
 
 inputs:
-  fine_tune:
+  deployment:
     type: uri_folder
-    path: ./data/4fine_tune/
+    path: ./data/5deployment/
+
+  test_data:
+    type: uri_file
+    path: ./data/7score/yelp_text_small.csv
 
 outputs:
   model:
@@ -17,7 +21,8 @@ outputs:
     
 command: >-
   python save_model.py
-    --fine_tune ${{inputs.fine_tune}}
-    --model ${{outputs.model}}
+  --deployment ${{inputs.deployment}}
+  --model ${{outputs.model}}
+  --test_data ${{inputs.test_data}}
     
 compute: azureml:cpu-cluster

@@ -4,7 +4,7 @@ import pandas as pd
 import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--raw_data", default="./data/1raw/yelp_text_small.csv")
+parser.add_argument("--raw_data", default="./data/1raw/yelp_small.csv")
 parser.add_argument("--train_output", default="./data/2train/yelp_train.jsonl")
 parser.add_argument("--validation_output", default="./data/2validation/yelp_validation.jsonl")
 parser.add_argument("--prompt_column", default="text")
