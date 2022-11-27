@@ -1,0 +1,66 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+
+settings: 
+  default_compute: azureml:cpu-cluster
+
+jobs:
+  sweep:
+    type: sweep
+    inputs:
+      training_data:
+        type: uri_folder
+        path: ./data/3train_uploaded
+
+      validation_data:
+        type: uri_folder
+        path: ./data/3validation_uploaded
+      prompt_column: text
+      completion_column: stars
+      train_test_split: 0.8
+      seed: 172983
+      #model: ada
+      #n_epochs: 1
+      #batch_size: 4
+      #learning_rate_multiplier: 0.1
+      classification_n_classes: 5
+      aoai_endpoint: https://aoai.openai.azure.com/
+      api_version: 2022-06-01-preview
+    sampling_algorithm: random
+    search_space:
+      model:
+        type: choice
+        values: 
+          - ada
+          - babbage
+          - curie
+      n_epochs:
+        type: choice
+        values: 
+          - 5
+          - 10
+          - 15
+          - 20
+      batch_size:
+        type: choice
+        values: 
+          - 4
+          - 8
+          - 16
+          - 32
+          - 64
+      learning_rate_multiplier:
+        type: uniform
+        min_value: 0.02
+        max_value: 0.2
+    objective:
+      primary_metric: classification/weighted_f1_score
+      goal: maximize
+    trial: ./3fine_tune_component.yaml
+
+    limits:
+      max_total_trials: 100
+      max_concurrent_trials: 10
+      timeout: 10000
+
+
