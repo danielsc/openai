@@ -26,7 +26,7 @@
 |50% |      0.332230
 |max |     0.506950
 
-- In addition, early stopping would be really useful, if only to cut off the runs on the left of the histogra that are doing so poorly that they don't exceed 0.1 percent.
+- In addition, early stopping would be really useful, if only to cut off the runs on the left of the histogram which are doing so poorly that they don't even exceed an F1 score of `0.10`.
 
 ## Issues:
 
