@@ -1,57 +1,77 @@
-created_at: 1669502168
+created_at: 1669570186
 events:
-- created_at: 1669502170
+- created_at: 1669570190
   level: info
   message: Job enqueued. Waiting for jobs ahead to complete.
   object: fine-tune-event
-- created_at: 1669502259
+- created_at: 1669570287
+  level: info
+  message: 'Jobs ahead in queue: 6'
+  object: fine-tune-event
+- created_at: 1669571465
+  level: info
+  message: 'Jobs ahead in queue: 5'
+  object: fine-tune-event
+- created_at: 1669575475
+  level: info
+  message: 'Jobs ahead in queue: 2'
+  object: fine-tune-event
+- created_at: 1669576830
+  level: info
+  message: 'Jobs ahead in queue: 1'
+  object: fine-tune-event
+- created_at: 1669578438
+  level: info
+  message: 'Jobs ahead in queue: 0'
+  object: fine-tune-event
+- created_at: 1669579737
   level: info
   message: Job started.
   object: fine-tune-event
-- created_at: 1669502312
+- created_at: 1669579774
   level: info
   message: Training started.
   object: fine-tune-event
-- created_at: 1669502433
+- created_at: 1669579899
   level: info
-  message: 'Created results file: file-7447b5a8318346b185782c9c0b52c7c0'
+  message: 'Created results file: file-434b41866a4b4729b997984462c10624'
   object: fine-tune-event
-- created_at: 1669503012
+- created_at: 1669580841
   level: info
   message: Postprocessing started.
   object: fine-tune-event
-- created_at: 1669503680
+- created_at: 1669581485
   level: info
   message: Job succeeded.
   object: fine-tune-event
-- created_at: 1669502433
+- created_at: 1669579899
   level: info
-  message: 'Completed results file: file-7447b5a8318346b185782c9c0b52c7c0'
+  message: 'Completed results file: file-434b41866a4b4729b997984462c10624'
   object: fine-tune-event
-- created_at: 1669503723
+- created_at: 1669581492
   level: info
-  message: 'Training hours billed: 0.250'
+  message: 'Training hours billed: 0.500'
   object: fine-tune-event
-fine_tuned_model: ada.ft-2bc72fa8850c4d738f156795134e34d9
+fine_tuned_model: babbage.ft-f042c2b580e948bebd44bb16634452b8
 hyperparams:
   batch_size: 4
   classification_n_classes: 5
   compute_classification_metrics: true
-  learning_rate_multiplier: 0.1
+  learning_rate_multiplier: 0.1938194907688383
   n_epochs: 20
   prompt_loss_weight: 0.1
-id: ft-2bc72fa8850c4d738f156795134e34d9
-model: ada
+id: ft-f042c2b580e948bebd44bb16634452b8
+model: babbage
 object: fine-tune
 result_files:
-- bytes: 7824
-  created_at: 1669502433
+- bytes: 7801
+  created_at: 1669579899
   filename: results.csv
-  id: file-7447b5a8318346b185782c9c0b52c7c0
+  id: file-434b41866a4b4729b997984462c10624
   object: file
   purpose: fine-tune-results
   status: succeeded
-  updated_at: 1669503723
+  updated_at: 1669581492
 status: succeeded
 training_files:
 - created_at: 1668094594
@@ -61,7 +81,7 @@ training_files:
   purpose: fine-tune
   status: succeeded
   updated_at: 1668094599
-updated_at: 1669503723
+updated_at: 1669581492
 validation_files:
 - created_at: 1669302990
   filename: yelp_validation.jsonl.jsonl
