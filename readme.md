@@ -36,7 +36,8 @@ az ml job create -f 0pipeline.yaml
 ```
 ![](images/pipeline.png)
 
-Only if you want to run the python code locally:
+**Only if you want to run the python code locally:**
+
 6. Create the conda environment
 ```shell
 conda env create -f conda.yml
