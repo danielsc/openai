@@ -1,10 +1,11 @@
 ## Findings
 ### Hyperparameter tuning for fine-tuning is useful. 
-- There is no obvious way to get to the best hyperparameter values for fine-tuning without a decent number of runs. The best model so far was a `babbage` model with a batch size of `4`, a learning rate multiplier of `0.19`, and it was trained for 20 epochs. The next best model was an `ada` model with batch size of `8`, a learning rate multipler of `0.11`, and it was trained for 15 epochs. After 83 runs for the given problem, data and prompt crafting, it seems that a `babbage` model with a small batch size (`4`), `20` epochs and a learning rate multiplier of around `0.15` might be a good choice. 
+- There is no obvious way to get to the best hyperparameter values for fine-tuning without a decent number of runs. The best model so far was a `babbage` model with a batch size of `4`, a learning rate multiplier of `0.19`, and it was trained for `20` epochs. The next best model was an `ada` model with batch size of `8`, a learning rate multipler of `0.11`, and it was trained for `15` epochs. After 83 runs for the given problem, data and prompt crafting, it seems that a `babbage` model with a small batch size (`4`), `20` epochs and a learning rate multiplier of around `0.15` might be a good choice. 
 ![](images/all_scatterplots.png)
 
 
 - Outof 83 runs, the best model was 20 percentage points better than the median model, which one might hope to arrive at through a handful of manually crafted runs.
+
 ![](images/f1_score.png)
 
 | stat | value |
