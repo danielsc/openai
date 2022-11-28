@@ -26,6 +26,9 @@ jobs:
       classification_n_classes: 5
       aoai_endpoint: https://aoai.openai.azure.com/
       api_version: 2022-06-01-preview
+    outputs:
+      fine_tune_metadata:
+        type: uri_folder
     sampling_algorithm: random
     search_space:
       model:
