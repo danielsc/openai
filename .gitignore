@@ -4,3 +4,4 @@
 /oai-cli-prep
 /tmp
 **/__pycache__/**
+openai_api_key
