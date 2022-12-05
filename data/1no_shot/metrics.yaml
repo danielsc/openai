@@ -1,0 +1,12 @@
+aoai_endpoint: https://aoai.openai.azure.com/
+api_version: 2022-06-01-preview
+completion_column: stars
+completion_deployment: text-curie-001
+data: data/1raw/yelp_test.csv
+metrics:
+  accuracy: 0.27514792899408286
+  f1: 0.25997401338819603
+  precision: 0.5974214309153074
+  recall: 0.27514792899408286
+prompt_column: text
+test_output: ./data/1no_shot/metrics.yaml

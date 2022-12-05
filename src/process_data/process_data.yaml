@@ -3,14 +3,14 @@ type: command
 
 environment: 
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
-  conda_file: ./conda.yml
+  conda_file: ../../conda.yml
 
-code: ./src/process_data
+code: .
 
 inputs:
   raw_data:
     type: uri_file
-    path: data/1raw/yelp_small.csv
+    path: ../../data/1raw/yelp_small.csv
   prompt_column: text
   completion_column: stars
   train_test_split: 0.8

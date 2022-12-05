@@ -4,9 +4,9 @@ name: aoai_process_data
 
 environment: 
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
-  conda_file: ./conda.yml
+  conda_file: ../../conda.yml
 
-code: ./src/process_data
+code: .
 
 inputs:
   raw_data: 

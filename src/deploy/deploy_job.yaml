@@ -2,14 +2,14 @@ $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 
 environment:
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
-  conda_file: ./conda.yml
+  conda_file: ../../conda.yml
 
-code: ./src/deploy 
+code: .
 
 inputs:
   fine_tune:
     type: uri_folder
-    path: ./data/4fine_tune/
+    path: ../../data/4fine_tune/
   aoai_endpoint: https://aoai.openai.azure.com/
   api_version: 2022-06-01-preview
 

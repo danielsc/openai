@@ -1,47 +1,31 @@
-$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
-
-name: openai_fine_tune
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 
 environment:
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
-  conda_file: ./conda.yml
+  conda_file: ../../conda.yml
 
-code: ./src/fine_tune
+code: .
 
 inputs:
   training_data:
     type: uri_folder
+    path: ../../data/3train_uploaded
 
   validation_data:
     type: uri_folder
+    path: ../../data/3validation_uploaded
   
-  model:
-    type: string
-    enum: [ada, babbage, curie, davinci]
-    default: ada
-  n_epochs:  
-    type: integer
-    default: 1
-  batch_size: 
-    type: integer
-    default: 4
-  learning_rate_multiplier: 
-    type: number
-    default: 0.1
-  classification_n_classes: 
-    type: integer
-    default: 5
-
-  aoai_endpoint: 
-    type: string
-    
-  api_version: 
-    type: string
-    default: 2022-06-01-preview
+  model: babbage
+  n_epochs: 20
+  batch_size: 4
+  learning_rate_multiplier: 0.15
+  classification_n_classes: 5
+  aoai_endpoint: https://aoai.openai.azure.com/
+  api_version: 2022-06-01-preview
 
 outputs:
   fine_tune_metadata:
-    type: uri_folder
+    
     
 command: >-
   python fine_tune.py
@@ -56,5 +40,4 @@ command: >-
   --aoai_endpoint ${{inputs.aoai_endpoint}}
   --api_version ${{inputs.api_version}}
     
-    
-
+compute: azureml:cpu-cluster

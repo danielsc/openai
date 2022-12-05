@@ -1,0 +1,17 @@
+$schema: https://azuremlschemas.azureedge.net/latest/autoMLJob.schema.json
+type: automl
+task: classification
+
+training_data:
+  type: mltable
+  path: ./data/2feature/yelp_curie
+
+target_column_name: stars
+
+limits:
+  max_trials: 10
+  max_concurrent_trials: 5
+  
+compute: azureml:cpu-cluster
+
+

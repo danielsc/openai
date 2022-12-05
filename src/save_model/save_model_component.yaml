@@ -1,19 +1,19 @@
-$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: openai_save_model
 
 environment:
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
-  conda_file: ./conda.yml
+  conda_file: ../../conda.yml
 
-code: ./src/save_model
+code: .
 
 inputs:
   deployment:
     type: uri_folder
-    path: ./data/5deployment/
 
   test_data:
     type: uri_file
-    path: ./data/1raw/yelp_test.csv
 
 outputs:
   model:
@@ -24,5 +24,4 @@ command: >-
   --deployment ${{inputs.deployment}}
   --model ${{outputs.model}}
   --test_data ${{inputs.test_data}}
-    
-compute: azureml:cpu-cluster
+

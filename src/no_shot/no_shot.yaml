@@ -1,0 +1,35 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ../../conda.yml
+
+code: .
+
+inputs:
+  data:
+    type: uri_file
+    path: ../../data/1raw/yelp_test.csv
+  prompt_column: text
+  completion_column: stars
+  
+  aoai_endpoint: https://aoai.openai.azure.com/
+  api_version: 2022-06-01-preview
+  completion_deployment: text-davinci-002
+
+outputs:
+  test_output:
+    type: uri_file
+    
+    
+command: >-
+  python no_shot.py
+  --data ${{inputs.data}}
+  --prompt_column ${{inputs.prompt_column}}
+  --completion_column ${{inputs.completion_column}}
+  --aoai_endpoint ${{inputs.aoai_endpoint}}
+  --api_version ${{inputs.api_version}}
+  --completion_deployment ${{inputs.completion_deployment}}
+  --test_output ${{outputs.test_output}}
+    
+compute: azureml:cpu-cluster

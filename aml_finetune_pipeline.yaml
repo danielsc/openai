@@ -30,7 +30,7 @@ outputs:
 jobs:
   process_data:
     type: command
-    component: ./1process_data_component.yaml
+    component: ./src/process_data/process_data_component.yaml
     inputs:
       raw_data: ${{parent.inputs.raw_data}}
       prompt_column: ${{parent.inputs.prompt_column}}
@@ -44,7 +44,7 @@ jobs:
 
   upload_data_train:
     type: command
-    component: ./2upload_data_component.yaml
+    component: ./src/upload_data/upload_data_component.yaml
     inputs:
       file_to_upload: ${{parent.jobs.process_data.outputs.train}}
     outputs:
@@ -52,7 +52,7 @@ jobs:
 
   upload_data_validation:
     type: command
-    component: ./2upload_data_component.yaml
+    component: ./src/upload_data/upload_data_component.yaml
     inputs:
       file_to_upload: ${{parent.jobs.process_data.outputs.validation}}
     outputs:
@@ -60,7 +60,7 @@ jobs:
 
   fine_tune:
     type: command
-    component: ./3fine_tune_component.yaml
+    component: ./src/fine_tune/fine_tune_component.yaml
     inputs:
       training_data: ${{parent.jobs.upload_data_train.outputs.upload_metadata}}
       validation_data: ${{parent.jobs.upload_data_validation.outputs.upload_metadata}}
@@ -76,7 +76,7 @@ jobs:
 
   deploy:
     type: command
-    component: ./4deploy_component.yaml
+    component: ./src/deploy/deploy_component.yaml
     inputs:
       fine_tune: ${{parent.jobs.fine_tune.outputs.fine_tune_metadata}}
       aoai_endpoint: ${{parent.inputs.aoai_endpoint}}
@@ -86,7 +86,7 @@ jobs:
 
   save_model:
     type: command
-    component: ./5save_model_component.yaml
+    component: ./src/save_model/save_model_component.yaml
     inputs:
       deployment: ${{parent.jobs.deploy.outputs.deployment}}
       aoai_endpoint: ${{parent.inputs.aoai_endpoint}}

@@ -37,7 +37,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     self.api_key = load_api_key(keyname = "openai-key")
 
     if self.api_key is None:
-      print("key is ", self.api_key)
+      # rint("key is ", self.api_key)
       raise Exception("Please set env var OPENAI_API_KEY")
 
     self.url = self.endpoint + "openai/deployments/" + self.deployment + "/completions?api-version=" + self.api_version
@@ -48,7 +48,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
       "prompt": list(model_input.prompt.values)
     }
 
-    print(payload)
+    # print(payload)
     
     r = requests.post(self.url,
       headers={
@@ -58,8 +58,8 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
       json = payload
     )
     data = r.json()
-    print("DEBUG: ", data)
-    print("\n\n\n")
+    #print("DEBUG: ", data)
+    #print("\n\n\n")
     return [row['text'] for row in data['choices']]
 
   def predict(self, context, model_input: pd.DataFrame):

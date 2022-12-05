@@ -1,24 +1,25 @@
-$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: aoai_upload_data
 
 environment: 
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
-  conda_file: ./conda.yml
+  conda_file: ../../conda.yml
 
-code: ./src/upload_data
+code: .
 
 inputs:
   file_to_upload:
     type: uri_file
-    path: ./data/2train/yelp_train.jsonl
 
 outputs:
   upload_metadata:
-
-compute: azureml:cpu-cluster
+    type: uri_folder
 
 command: >- 
   python upload_data.py 
   --file_to_upload ${{inputs.file_to_upload}} 
   --upload_metadata ${{outputs.upload_metadata}}
+
 
 
