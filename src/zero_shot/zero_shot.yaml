@@ -23,7 +23,7 @@ outputs:
     
     
 command: >-
-  python no_shot.py
+  python zero_shot.py
   --data ${{inputs.data}}
   --prompt_column ${{inputs.prompt_column}}
   --completion_column ${{inputs.completion_column}}

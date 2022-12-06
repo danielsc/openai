@@ -63,7 +63,7 @@ def save_yaml(content, filename):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", default="./data/1raw/yelp_mini.csv")
-    parser.add_argument("--test_output", default="./data/1no_shot/metrics.yaml")
+    parser.add_argument("--test_output", default="./data/1zero_shot/metrics.yaml")
     parser.add_argument("--prompt_column", default="text")
     parser.add_argument("--completion_column", default="stars")
     parser.add_argument("--aoai_endpoint", default="https://aoai.openai.azure.com/")

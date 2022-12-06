@@ -29,7 +29,7 @@ jobs:
     outputs:
       fine_tune_metadata:
         type: uri_folder
-    sampling_algorithm: random
+    sampling_algorithm: bayesian
     search_space:
       model:
         type: choice
@@ -50,20 +50,18 @@ jobs:
           - 4
           - 8
           - 16
-          - 32
-          - 64
       learning_rate_multiplier:
         type: uniform
-        min_value: 0.02
-        max_value: 0.2
+        min_value: 0.05
+        max_value: 0.25
     objective:
       primary_metric: classification/weighted_f1_score
       goal: maximize
-    trial: ./3fine_tune_component.yaml
+    trial: ./src/fine_tune/fine_tune_component.yaml
 
     limits:
       max_total_trials: 100
       max_concurrent_trials: 10
-      timeout: 10000
+      timeout: 100000
 
 

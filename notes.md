@@ -1,4 +1,21 @@
 ## Findings
+
+### Fine-tuning is useful.
+
+For classification, below are the different models and modes that were tried. As can be seen, **no shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely fails to show improvements on curie. **Embedding + AutoML**, however, works very well on curie. 
+
+![](images/yelp_test_f1.png)
+
+| Model | Technique | Accuracy | F1 Score |
+| --- | --- | -- | -- |
+| ada | fine-tune | 0.5263 | 0.4855 |
+| babbage | fine-tune | 0.5733 | 0.5669 |
+| curie | fine-tune | 0.5376 | 0.5041 |
+| curie | no shot | 0.2751 | 0.2510 |
+| curie | embedding + AutoML | 0.6241 | 0.6202 |
+| davinci | no shot | 0.4763 | 0.4785 |
+
+
 ### Hyperparameter tuning for fine-tuning is useful. 
 - There is no obvious way to get to the best hyperparameter values for fine-tuning without a decent number of runs. The best model so far was a `babbage` model with a batch size of `4`, a learning rate multiplier of `0.19`, and it was trained for `20` epochs. The next best model was an `ada` model with batch size of `8`, a learning rate multipler of `0.11`, and it was trained for `15` epochs. After 83 runs for the given problem, data and prompt crafting, it seems that a `babbage` model with a small batch size (`4`), `20` epochs and a learning rate multiplier of around `0.15` might be a good choice. 
 ![](images/all_scatterplots.png)
