@@ -2,7 +2,7 @@
 
 ### Fine-tuning is useful.
 
-For classification, below are the different models and modes that were tried. As can be seen, **no shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely fails to show improvements on curie. **Embedding + AutoML**, however, works very well on curie. 
+For classification, below are the different models and modes that were tried. As can be seen, **zero shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely fails to show improvements on curie. **Embedding + AutoML**, however, works very well on curie. 
 
 ![](images/yelp_test_f1.png)
 
