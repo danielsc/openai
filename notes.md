@@ -4,7 +4,7 @@
 
 For classification, below are the different models and modes that were tried. As can be seen, **zero shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely fails to show improvements on curie. **Embedding + AutoML**, however, works very well on curie. 
 
-![](images/yelp_test_f1_.png)
+![](images/yelp_test_f1.png)
 
 | Model | Technique | Accuracy | F1 Score |
 | --- | --- | -- | -- |
@@ -17,33 +17,23 @@ For classification, below are the different models and modes that were tried. As
 
 
 ### Hyperparameter tuning for fine-tuning is useful. 
-- There is no obvious way to get to the best hyperparameter values for fine-tuning without a decent number of runs. The best model so far was a `babbage` model with a batch size of `4`, a learning rate multiplier of `0.19`, and it was trained for `20` epochs. The next best model was an `ada` model with batch size of `8`, a learning rate multipler of `0.11`, and it was trained for `15` epochs. After 83 runs for the given problem, data and prompt crafting, it seems that a `babbage` model with a small batch size (`4`), `20` epochs and a learning rate multiplier of around `0.15` might be a good choice. 
+- There is no obvious way to get to the best hyperparameter values for fine-tuning without a decent number of runs. The best model so far was a `babbage` model with a batch size of `4`, a learning rate multiplier of `0.17`, and it was trained for `10` epochs. The next best model was an `ada` model with batch size of `8`, a learning rate multipler of `0.11`, and it was trained for `15` epochs. After 83 runs for the given problem, data and prompt crafting, it seems that a `babbage` model with a small batch size (`4`), `20` epochs and a learning rate multiplier of around `0.15` might be a good choice. 
 ![](images/all_scatterplots.png)
 
 
-- Outof 83 runs, the best model was 20 percentage points better than the median model, which one might hope to arrive at through a handful of manually crafted runs.
+- Outof 100 runs, the best model was 16 percentage points better than the median and mean models, which one might hope to arrive at through a handful of manually crafted runs.
 
 ![](images/f1_score.png)
 
 | stat | value |
 | --- | --- |
 | count |   83.000000 |
-| mean    |  0.265154 |
-| min     | 0.008580|
-| 50%    |   0.307420|
-| max      | 0.506950|
+| mean    |  0.403587 |
+| min     | 0.249653|
+| 50%    |   0.404316|
+| max      | 0.566951|
 
-- Even if we drop all runs that have an f1 score below 0.1, the best model is still >17 percentage points better than the median (and the mean) model.
 
-| stat | value |
-| --- | --- |
-| count   | 65.000000
-| mean |     0.335467 
-|min|       0.219880
-|50% |      0.332230
-|max |     0.506950
-
-- In addition, early stopping would be really useful, if only to cut off the runs on the left of the histogram which are doing so poorly that they don't even exceed an F1 score of `0.10`.
 
 ## Issues:
 
@@ -56,3 +46,21 @@ For classification, below are the different models and modes that were tried. As
 - AOAI: Where is the reference documentation for the AOAI Python SDK? 
 
 - AOAI: Where is the documenation for the Azure-specific extensions to the AOAI service, for instance hyperparameters to control **LORA**?
+
+## Jobs To Be Done
+
+JTBDs for using LLMs with AzureML:
+1. LLM model selection: As a data scientist, I want to choose a model from a set of LLMs based on the task-type (text classification, token classification, sentence-similarity, etc.). I want to learn about the different models and test them out interatively.
+1. Prompt-crafting: As a data scientist, I want to be able to craft the prompt for the LLM(s) of my choice. I want to 
+*formally experiment* with different prompts (incl. zero-shot, few-shot) and see how they perform on different datasets using different hyperparameters. I want to be able to track the results of my prompt-crafting jobs. In the end, I want to be able to choose the best prompt for my task and create a model from it.
+1. Fine-tuning: As a data scientist, for the fine-tuning jobs I run, I want to be able track my which datasets, models, and hyperparameters were used in which experiments an which results were achieved. 
+2. Hyperparameter tuning: As a data scientist, I want to be able to tune the hyperparameters of my fine-tuning jobs efficiently (distribute workload across a cluster, track each run, stop poor runs, efficiently sample from search space, graph results).
+4. Model abstraction: As a data scientist, I want to be able to wrap my fine-tuned or prompt-crafted model together with the choose the best prompt for my task and create a model from it that I can take to other tasks like RAI analysis, deployment, batch inferencing, etc.
+RAI: As a data scientist, I want to be able to run RAI analysis on my fine-tuned models
+3. Batch Inferencing: As a data scientist, I want to be able to run batch inferencing jobs on my fine-tuned models
+5. Model deployment: As a data scientist, I want to be able to deploy my fine-tuned models to production
+
+JTBDs for AOAI with AzureML:
+1. Recognize same models: As a data scientist, I want recognize the models that I am offered AOAI in AzureML, so I can use what I might have used in AOAI for the above LLM JTBDs.
+1. Transfer fine-tuned models: As a data scientist, I want to be able to transfer my fine-tuned models from AOAI to AzureML, so that I can use them for RAI analysis, batch inferencing, etc.
+1. Transfer deployed models: As a data scientist, I want to be able to transfer my deployed models from AOAI to AzureML, so that I can use them for RAI analysis, batch inferencing, etc.

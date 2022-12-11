@@ -1,0 +1,2 @@
+intro,shot
+"Classify the following yelp review into 1 of the following categories: categories: [1, 2, 3, 4, 5]","\n\nyelp review: {text} \n\nClassified category: {stars}"
