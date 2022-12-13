@@ -60,6 +60,8 @@ RAI: As a data scientist, I want to be able to run RAI analysis on my fine-tuned
 3. Batch Inferencing: As a data scientist, I want to be able to run batch inferencing jobs on my fine-tuned models
 5. Model deployment: As a data scientist, I want to be able to deploy my fine-tuned models to production
 
+see also: [24+25 SOTA Deck](https://microsoft.sharepoint.com/:p:/r/teams/Vienna/_layouts/15/Doc.aspx?sourcedoc=%7BE6D3871A-4CB9-4285-A2F7-E9FF83C93762%7D&file=SOTA-1.3.pptx&action=edit&mobileredirect=true&share=IQEah9PmuUyFQqL36f-DyTdiAaAn-1wXNqUsoDQ2AXi-8Do)
+
 JTBDs for AOAI with AzureML:
 1. Recognize same models: As a data scientist, I want recognize the models that I am offered AOAI in AzureML, so I can use what I might have used in AOAI for the above LLM JTBDs.
 1. Transfer fine-tuned models: As a data scientist, I want to be able to transfer my fine-tuned models from AOAI to AzureML, so that I can use them for RAI analysis, batch inferencing, etc.
