@@ -10,7 +10,7 @@ code: .
 inputs:
   raw_data:
     type: uri_file
-    path: ../../data/1raw/yelp_small.csv
+    path: azureml:yelp_small_csv@latest
   prompt_column: text
   completion_column: stars
   train_test_split: 0.8

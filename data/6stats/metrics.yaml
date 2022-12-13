@@ -1,0 +1,6 @@
+deployment_id: deployment-e1bb35d029da43f88d0ef118391ffa0b
+model_id: babbage.ft-f042c2b580e948bebd44bb16634452b8
+test_accuracy: 0.4467455621301775
+test_f1: 0.4286504117037983
+test_precision: 0.41898482950985205
+test_recall: 0.4467455621301775

@@ -1,0 +1,35 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: ../../conda.yml
+
+code: .
+
+inputs:
+  fine_tune:
+    type: uri_folder
+    path: ../../data/4fine_tune/
+  aoai_endpoint: https://aoai.openai.azure.com/
+  api_version: 2022-06-01-preview
+  hyperdrive_run: HD_94013985-1f06-47cf-b41e-0c5bf5e5f6e7
+  test_data: 
+    type: uri_file
+    path: ../../data/1raw/yelp_test.csv
+  prompt_column: text
+  completion_column: stars
+
+outputs:
+  stats:
+    type: uri_file
+    
+command: >-
+  python deploy_and_test.py
+  --aoai_endpoint ${{inputs.aoai_endpoint}}
+  --api_version ${{inputs.api_version}}
+  --hyperdrive_run ${{inputs.hyperdrive_run}}
+  --test_data ${{inputs.test_data}}
+  --prompt_column ${{inputs.prompt_column}}
+  --completion_column ${{inputs.completion_column}}
+  --stats ${{outputs.stats}}
+compute: azureml:cpu-cluster

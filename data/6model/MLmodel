@@ -3,16 +3,18 @@ flavors:
     artifacts:
       deployment:
         path: artifacts/MLArtifact.yaml
-        uri: ../../data/5deployment/MLArtifact.yaml
+        uri: data/5deployment/MLArtifact.yaml
     cloudpickle_version: 2.2.0
     code: code
-    env: conda.yaml
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
     loader_module: mlflow.pyfunc.model
     python_model: python_model.pkl
-    python_version: 3.8.15
-mlflow_version: 1.30.0
-model_uuid: c24fc411e3184ed785d792fbdde4c221
+    python_version: 3.10.6
+mlflow_version: 2.0.1
+model_uuid: 938080b711b94ca7bb37e255904652d5
 signature:
   inputs: '[{"name": "text", "type": "string"}]'
   outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
-utc_time_created: '2022-11-24 13:31:26.164711'
+utc_time_created: '2022-12-13 17:20:11.764532'

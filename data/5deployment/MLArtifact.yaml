@@ -1,10 +1,10 @@
-created_at: 1669650353
+created_at: 1670855590
 endpoint: https://aoai.openai.azure.com/
-id: deployment-906b5c091a3744f99cd674405460a46d
+id: deployment-e1bb35d029da43f88d0ef118391ffa0b
 model: babbage.ft-f042c2b580e948bebd44bb16634452b8
 object: deployment
 owner: organization-owner
 scale_settings:
   scale_type: standard
 status: running
-updated_at: 1669650353
+updated_at: 1670855590

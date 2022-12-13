@@ -37,7 +37,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     self.api_key = load_api_key(keyname = "openai-key")
 
     if self.api_key is None:
-      # rint("key is ", self.api_key)
+      print("key is ", self.api_key)
       raise Exception("Please set env var OPENAI_API_KEY")
 
     self.url = self.endpoint + "openai/deployments/" + self.deployment + "/completions?api-version=" + self.api_version
@@ -49,6 +49,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     }
 
     # print(payload)
+    print(".", end="")
     
     r = requests.post(self.url,
       headers={
@@ -58,8 +59,11 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
       json = payload
     )
     data = r.json()
-    #print("DEBUG: ", data)
-    #print("\n\n\n")
+    # print("DEBUG: ", data)
+    # print("\n\n\n")
+    if "error" in data:
+      print(data)
+      raise Exception(data['error']['message'])
     return [row['text'] for row in data['choices']]
 
   def predict(self, context, model_input: pd.DataFrame):
@@ -79,6 +83,12 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     # parse the stars from the completion and return an int array
     return [parse_stars(completion) for completion in scores]
   
+  def source_paths(self):
+    return [__file__]
+
+  def conda_path(self):
+    return os.path.join(os.path.dirname(__file__), "conda.yaml")
+
 if __name__=="__main__":
   # just for testing
   import pathlib
