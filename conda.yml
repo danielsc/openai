@@ -1,4 +1,4 @@
-name: openai
+name: openai3
 channels:
   - defaults
   - conda-forge

@@ -12,7 +12,7 @@ inputs:
     path: ../../data/4fine_tune/
   aoai_endpoint: https://aoai.openai.azure.com/
   api_version: 2022-06-01-preview
-  hyperdrive_run: HD_94013985-1f06-47cf-b41e-0c5bf5e5f6e7
+  hyperdrive_run: HD_c757d6eb-5412-4644-a235-a0e6ed368884
   test_data: 
     type: uri_file
     path: ../../data/1raw/yelp_test.csv

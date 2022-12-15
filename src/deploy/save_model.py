@@ -43,6 +43,7 @@ def save_pyfunc_model(deployment: str, path: str, model_input: pd.DataFrame, mod
     code_path=model.source_paths(), conda_env=model.conda_path(), signature=signature)
 
 def calculate_metrics(references, predictions):
+  print("Calculating metrics")
   f1 = evaluate.load("f1").compute(references=references, predictions=predictions, average='weighted')
   accuracy = evaluate.load("accuracy").compute(references=references, predictions=predictions)
   precision = evaluate.load("precision").compute(references=references, predictions=predictions, average='weighted')

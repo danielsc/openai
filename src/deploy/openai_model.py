@@ -1,6 +1,7 @@
 import requests, os
 import mlflow, yaml
 import pandas as pd
+import time
 
 def load_yaml(filename):
   with open(filename, encoding='utf-8') as fh:
@@ -48,24 +49,31 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
       "prompt": list(model_input.prompt.values)
     }
 
-    # print(payload)
-    print(".", end="")
-    
-    r = requests.post(self.url,
-      headers={
-        "api-key": self.api_key,
-        "Content-Type": "application/json"
-      },
-      json = payload
-    )
-    data = r.json()
-    # print("DEBUG: ", data)
-    # print("\n\n\n")
-    if "error" in data:
-      print(data)
-      raise Exception(data['error']['message'])
-    return [row['text'] for row in data['choices']]
+    while True:
+      print(f"sending {len(model_input)} items to url {self.url}")
 
+      r = requests.post(self.url,
+        headers={
+          "api-key": self.api_key,
+          "Content-Type": "application/json"
+        },
+        json = payload
+      )
+      data = r.json()
+
+      if "error" in data:
+        print(data)
+        if (data['error']['code'] == 'DeploymentNotReady'):
+          print("Deployment not ready, waiting 10 seconds")
+          time.sleep(10)
+        else:
+          raise Exception(data['error']['message'])
+      else:
+        break
+
+    print("DEBUG: ", data)
+    return [row['text'] for row in data['choices']]
+   
   def predict(self, context, model_input: pd.DataFrame):
     ## apply to prompt modifications, in this case add "\n\n###\n\n'    
     df = model_input

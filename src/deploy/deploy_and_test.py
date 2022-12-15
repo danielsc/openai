@@ -32,7 +32,7 @@ class AOAIDeployer:
     def delete_deployment(self):
         print(f"deleting deployement: {self.deployment['id']}")
 
-        openai.Deployment.delete(id=self.deployment['id'])
+        openai.Deployment.delete(sid=self.deployment['id'])
 
 def get_finetunes_from_sweep(sweep_run_id):
 
@@ -117,7 +117,7 @@ def main():
                         test_data=args.test_data, 
                         prompt_column=args.prompt_column,
                         completion_column=args.completion_column)
-
+        print({**metrics, **job})
         metics_total.append({**metrics, **job})
         # delete deployment
         if deployer is not None:

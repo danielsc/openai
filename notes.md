@@ -47,6 +47,22 @@ For classification, below are the different models and modes that were tried. As
 
 - AOAI: Where is the documenation for the Azure-specific extensions to the AOAI service, for instance hyperparameters to control **LORA**?
 
+### Difference in performance between classification metrics reported and measured
+
+Strangely, I am seeing quite a difference between the classification metrics reported by the AOAI fine-tuning (`classification/accuracy` and `classification/f1_score_weighted`) and the same metrics measured by deplying the fine-tuned model and then running the same test set through it.
+
+Here is the graph of the difference between the two metrics for the different models. You would expect the dots to be close to the identity line, instead they are consistently below it.
+
+![](images/fine_tune_vs_deployed_model_metric.png)
+
+Here a boxplot that better shows the size of the differences. On average, the difference is around 5 percentage points, which is quite significant.
+
+![](images/diff_accuracy_f1.png)
+
+Looking at which accuracies are affected the most, (maybe expectedly) there is a slight increase in difference as the accuracy increases:
+
+![](images/diff_accuracy_f1_vs_fine_tune_accuracy_f1.png)
+
 ## Jobs To Be Done
 
 JTBDs for using LLMs with AzureML:
