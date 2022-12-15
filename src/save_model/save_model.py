@@ -6,12 +6,8 @@ import argparse
 import pandas as pd
 import yaml, os
 import numpy as np
+import evaluate, os
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--deployment", default="../../data/5deployment")
-parser.add_argument("--model", default="../../data/6model/")
-parser.add_argument("--test_data", default=None)
-args = parser.parse_args()
 
 def load_yaml(filename):
    with open(filename, encoding='utf-8') as fh:
@@ -32,24 +28,66 @@ def empty_folder(path):
       for d in dirs:
           shutil.rmtree(os.path.join(root, d))
          
-def save_pyfunc_model(deployment: str, path: str):
+def save_pyfunc_model(deployment: str, path: str, model_input: pd.DataFrame, model_output: np.array):
   artifacts = {
-    'deployment': deployment
+    'deployment': deployment,
   }
   model = OpenAIModel()
 
-  df = DataFrame({"text": ["foo", "bar", "baz"]})
-  signature = mlflow.models.infer_signature(model_input=df, model_output=np.array([3,4,5]))
+  signature = mlflow.models.infer_signature(model_input=model_input, model_output=model_output)
 
   # need to empty the folder first
   empty_folder(path)
-  
+
   mlflow.pyfunc.save_model(path, python_model=model, artifacts=artifacts,
-    code_path=['openai_model.py'], conda_env='conda.yml', signature=signature)
+    code_path=model.source_paths(), conda_env=model.conda_path(), signature=signature)
 
-save_pyfunc_model(args.deployment + "/MLArtifact.yaml", args.model)
+def calculate_metrics(references, predictions):
+  print("Calculating metrics")
+  f1 = evaluate.load("f1").compute(references=references, predictions=predictions, average='weighted')
+  accuracy = evaluate.load("accuracy").compute(references=references, predictions=predictions)
+  precision = evaluate.load("precision").compute(references=references, predictions=predictions, average='weighted')
+  recall = evaluate.load("recall").compute(references=references, predictions=predictions, average='weighted')
+  # merge the dicts
+  metrics = {**f1, **accuracy, **precision, **recall}
+  metrics = {"test_" + k: v for k, v in metrics.items()}
+  return metrics
 
-if not args.test_data is None:
-  df = pd.read_csv(args.test_data)
-  model = mlflow.pyfunc.load_model(args.model)
-  print(model.predict(df[:27]))
+def save_and_score(deployment, model_path, test_data, prompt_column, completion_column):
+  
+  df = pd.read_csv(test_data)
+  prompt = df[[prompt_column]]
+  completion = np.array(df[completion_column])
+
+  save_pyfunc_model(deployment, model_path, prompt, completion)
+  
+  model = mlflow.pyfunc.load_model(model_path)
+  predicted = model.predict(prompt)
+  deployment_data = load_yaml(deployment)
+  deployment_id = deployment_data['id']
+  model_id = deployment_data['model']
+  metrics = calculate_metrics(completion, predicted)
+  metrics = {**metrics, 'deployment_id': deployment_id, 'model_id': model_id}
+  return metrics
+
+
+if __name__ == "__main__":
+  print(os.environ["FOO"])
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--deployment", default="data/5deployment")
+  parser.add_argument("--model", default="data/6model/")
+  parser.add_argument("--test_data", default="data/1raw/yelp_test.csv")
+  parser.add_argument("--prompt_column", default="text")
+  parser.add_argument("--completion_column", default="stars")
+  parser.add_argument("--metrics", default="data/6stats/metrics.yaml")
+  args = parser.parse_args()
+  test_data = pd.DataFrame(pd.read_csv(args.test_data))
+
+  metrics = save_and_score(deployment=args.deployment + "/MLArtifact.yaml", 
+                            model_path=args.model, 
+                            test_data=args.test_data, 
+                            prompt_column=args.prompt_column,
+                            completion_column=args.completion_column)
+
+  print(metrics)
+  save_yaml(metrics, args.metrics)
