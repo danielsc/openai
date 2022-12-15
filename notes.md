@@ -56,7 +56,7 @@ JTBDs for using LLMs with AzureML:
 1. Fine-tuning: As a data scientist, for the fine-tuning jobs I run, I want to be able track my which datasets, models, and hyperparameters were used in which experiments an which results were achieved. 
 2. Hyperparameter tuning: As a data scientist, I want to be able to tune the hyperparameters of my fine-tuning jobs efficiently (distribute workload across a cluster, track each run, stop poor runs, efficiently sample from search space, graph results).
 4. Model abstraction: As a data scientist, I want to be able to wrap my fine-tuned or prompt-crafted model together with the choose the best prompt for my task and create a model from it that I can take to other tasks like RAI analysis, deployment, batch inferencing, etc.
-RAI: As a data scientist, I want to be able to run RAI analysis on my fine-tuned models
+5.RAI: As a data scientist, I want to be able to run RAI analysis on my fine-tuned models
 3. Batch Inferencing: As a data scientist, I want to be able to run batch inferencing jobs on my fine-tuned models
 5. Model deployment: As a data scientist, I want to be able to deploy my fine-tuned models to production
 
