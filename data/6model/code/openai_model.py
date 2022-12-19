@@ -1,6 +1,7 @@
 import requests, os
 import mlflow, yaml
 import pandas as pd
+import time
 
 def load_yaml(filename):
   with open(filename, encoding='utf-8') as fh:
@@ -34,7 +35,9 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     self.api_version="2022-06-01-preview" # hardcode for now
     self.deployment = deployment['id']
     self.endpoint = deployment['endpoint']
+    self.scoring_parameters = deployment['scoring_parameters']
     self.api_key = load_api_key(keyname = "openai-key")
+    
 
     if self.api_key is None:
       print("key is ", self.api_key)
@@ -45,27 +48,41 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
 
   def call_oai_endpoint(self, context, model_input: pd.DataFrame):
     payload = {
-      "prompt": list(model_input.prompt.values)
-    }
+      "prompt": list(model_input.prompt.values),
+      "max_tokens": self.scoring_parameters['max_tokens'],
+      "temperature": self.scoring_parameters['temperature'],
+      "top_p": self.scoring_parameters['top_p'],
+      "frequency_penalty": self.scoring_parameters['frequency_penalty'],
+    }    
 
-    # print(payload)
-    print(".", end="")
-    
-    r = requests.post(self.url,
-      headers={
-        "api-key": self.api_key,
-        "Content-Type": "application/json"
-      },
-      json = payload
-    )
-    data = r.json()
+    while True:
+      print(f"sending {len(model_input)} items to url {self.url}")
+
+      r = requests.post(self.url,
+        headers={
+          "api-key": self.api_key,
+          "Content-Type": "application/json"
+        },
+        json = payload
+      )
+      data = r.json()
+
+      if "error" in data:
+        print(data)
+        if (data['error']['code'] == 'DeploymentNotReady'):
+          print("Deployment not ready, waiting 10 seconds")
+          time.sleep(10)
+        elif (data['error']['code'] == '429'):
+          print("Too many requests, waiting 2 seconds")
+          time.sleep(2)
+        else:
+          raise Exception(data['error']['message'])
+      else:
+        break
+
     # print("DEBUG: ", data)
-    # print("\n\n\n")
-    if "error" in data:
-      print(data)
-      raise Exception(data['error']['message'])
     return [row['text'] for row in data['choices']]
-
+   
   def predict(self, context, model_input: pd.DataFrame):
     ## apply to prompt modifications, in this case add "\n\n###\n\n'    
     df = model_input

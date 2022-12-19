@@ -1,0 +1,67 @@
+$schema: https://azuremlschemas.azureedge.net/latest/sweepJob.schema.json
+type: sweep
+
+compute: azureml:cpu-cluster
+
+inputs:
+  deployment:
+    type: uri_folder
+    path: data/5deployment/
+  test_data:
+    type: uri_file
+    path: data/1raw/yelp_validation.csv
+  prompt_column: text
+  completion_column: stars
+  
+outputs:
+  metrics:
+    type: uri_file
+  model:
+    type: mlflow_model
+sampling_algorithm: random
+search_space:
+  max_tokens:
+    type: choice
+    values: [1,3,5,10]
+  temperature:
+    type: uniform
+    min_value: 0
+    max_value: 1
+  top_p:
+    type: uniform
+    min_value: 0
+    max_value: 1
+  frequency_penalty:
+    type: uniform
+    min_value: 0
+    max_value: 1
+trial: 
+  environment:
+    image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+    conda_file: conda.yml
+
+  code: src/save_model
+
+  command: >-
+    python save_model.py
+    --deployment ${{inputs.deployment}}
+    --model ${{outputs.model}}
+    --test_data ${{inputs.test_data}}
+    --prompt_column ${{inputs.prompt_column}}
+    --completion_column ${{inputs.completion_column}}
+    --metrics ${{outputs.metrics}}
+    --max_tokens ${{search_space.max_tokens}}
+    --temperature ${{search_space.temperature}}
+    --top_p ${{search_space.top_p}}
+    --frequency_penalty ${{search_space.frequency_penalty}}
+
+objective:
+    goal: maximize
+    primary_metric: test_f1
+
+limits:
+  max_total_trials: 100
+  max_concurrent_trials: 10
+  timeout: 100000
+
+

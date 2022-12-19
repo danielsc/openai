@@ -7,6 +7,7 @@ import pandas as pd
 import yaml, os
 import numpy as np
 import evaluate, os
+import tempfile
 
 
 def load_yaml(filename):
@@ -28,9 +29,15 @@ def empty_folder(path):
       for d in dirs:
           shutil.rmtree(os.path.join(root, d))
          
-def save_pyfunc_model(deployment: str, path: str, model_input: pd.DataFrame, model_output: np.array):
+def save_pyfunc_model(deployment: str, path: str, model_input: pd.DataFrame, model_output: np.array, scoring_parameters: dict):
+  basefolder = tempfile.mkdtemp()
+  artifact_path = basefolder + "/MLArtifact.yaml"
+  deployment_dict = load_yaml(deployment)
+  deployment_dict["scoring_parameters"] = scoring_parameters
+  save_yaml(deployment_dict, artifact_path)
+
   artifacts = {
-    'deployment': deployment,
+    'deployment': artifact_path,
   }
   model = OpenAIModel()
 
@@ -53,13 +60,13 @@ def calculate_metrics(references, predictions):
   metrics = {"test_" + k: v for k, v in metrics.items()}
   return metrics
 
-def save_and_score(deployment, model_path, test_data, prompt_column, completion_column):
+def save_and_score(deployment, model_path, test_data, prompt_column, completion_column, scoring_parameters):
   
   df = pd.read_csv(test_data)
   prompt = df[[prompt_column]]
   completion = np.array(df[completion_column])
 
-  save_pyfunc_model(deployment, model_path, prompt, completion)
+  save_pyfunc_model(deployment, model_path, prompt, completion, scoring_parameters)
   
   model = mlflow.pyfunc.load_model(model_path)
   predicted = model.predict(prompt)
@@ -72,7 +79,6 @@ def save_and_score(deployment, model_path, test_data, prompt_column, completion_
 
 
 if __name__ == "__main__":
-  print(os.environ["FOO"])
   parser = argparse.ArgumentParser()
   parser.add_argument("--deployment", default="data/5deployment")
   parser.add_argument("--model", default="data/6model/")
@@ -80,6 +86,12 @@ if __name__ == "__main__":
   parser.add_argument("--prompt_column", default="text")
   parser.add_argument("--completion_column", default="stars")
   parser.add_argument("--metrics", default="data/6stats/metrics.yaml")
+
+  parser.add_argument("--max_tokens", type=int, default=1)
+  parser.add_argument("--temperature", type=float, default=0)
+  parser.add_argument("--top_p", type=float, default=0)
+  parser.add_argument("--frequency_penalty", type=float, default=0)
+
   args = parser.parse_args()
   test_data = pd.DataFrame(pd.read_csv(args.test_data))
 
@@ -87,7 +99,23 @@ if __name__ == "__main__":
                             model_path=args.model, 
                             test_data=args.test_data, 
                             prompt_column=args.prompt_column,
-                            completion_column=args.completion_column)
+                            completion_column=args.completion_column, 
+                            scoring_parameters={"max_tokens": args.max_tokens,
+                                                "temperature": args.temperature,
+                                                "top_p": args.top_p,
+                                                "frequency_penalty": args.frequency_penalty})
 
+  metrics = {**metrics, 'max_tokens': args.max_tokens, 'temperature': args.temperature, 'top_p': args.top_p, 'frequency_penalty': args.frequency_penalty}
   print(metrics)
   save_yaml(metrics, args.metrics)
+  mlflow.log_params({ "deployment": metrics["deployment_id"],
+                      "model": metrics["model_id"],
+                      "max_tokens": metrics["max_tokens"],
+                      "temperature": metrics["temperature"],
+                      "top_p": metrics["top_p"],
+                      "frequency_penalty": metrics["frequency_penalty"]})
+  mlflow.log_metrics({"test_f1": metrics['test_f1'],
+                      "test_accuracy": metrics['test_accuracy'],
+                      "test_precision": metrics['test_precision'],
+                      "test_recall": metrics['test_recall']})
+

@@ -35,7 +35,9 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     self.api_version="2022-06-01-preview" # hardcode for now
     self.deployment = deployment['id']
     self.endpoint = deployment['endpoint']
+    self.scoring_parameters = deployment['scoring_parameters']
     self.api_key = load_api_key(keyname = "openai-key")
+    
 
     if self.api_key is None:
       print("key is ", self.api_key)
@@ -47,10 +49,10 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
   def call_oai_endpoint(self, context, model_input: pd.DataFrame):
     payload = {
       "prompt": list(model_input.prompt.values),
-      "max_tokens": 5,
-      "temperature": 0,
-      "top_p": 0,
-      "frequency_penalty": 0
+      "max_tokens": self.scoring_parameters['max_tokens'],
+      "temperature": self.scoring_parameters['temperature'],
+      "top_p": self.scoring_parameters['top_p'],
+      "frequency_penalty": self.scoring_parameters['frequency_penalty'],
     }    
 
     while True:
@@ -70,12 +72,15 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
         if (data['error']['code'] == 'DeploymentNotReady'):
           print("Deployment not ready, waiting 10 seconds")
           time.sleep(10)
+        elif (data['error']['code'] == '429'):
+          print("Too many requests, waiting 2 seconds")
+          time.sleep(2)
         else:
           raise Exception(data['error']['message'])
       else:
         break
 
-    print("DEBUG: ", data)
+    # print("DEBUG: ", data)
     return [row['text'] for row in data['choices']]
    
   def predict(self, context, model_input: pd.DataFrame):

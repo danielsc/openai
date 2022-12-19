@@ -1,10 +1,15 @@
 created_at: 1670855590
 endpoint: https://aoai.openai.azure.com/
-id: deployment-e1bb35d029da43f88d0ef118391ffa0b
-model: babbage.ft-f042c2b580e948bebd44bb16634452b8
+id: best-model
+model: babbage.ft-0e40b0ef930246ebb6c1f277d802407b
 object: deployment
 owner: organization-owner
 scale_settings:
   scale_type: standard
+scoring_parameters:
+  frequency_penalty: 0
+  max_tokens: 1
+  temperature: 0
+  top_p: 0
 status: running
 updated_at: 1670855590

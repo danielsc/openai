@@ -1,6 +1,10 @@
-deployment_id: deployment-e1bb35d029da43f88d0ef118391ffa0b
-model_id: babbage.ft-f042c2b580e948bebd44bb16634452b8
-test_accuracy: 0.4467455621301775
-test_f1: 0.4286504117037983
-test_precision: 0.41898482950985205
-test_recall: 0.4467455621301775
+deployment_id: best-model
+frequency_penalty: 0
+max_tokens: 1
+model_id: babbage.ft-0e40b0ef930246ebb6c1f277d802407b
+temperature: 0
+test_accuracy: 0.6146616541353384
+test_f1: 0.6041612907281713
+test_precision: 0.6290765430113058
+test_recall: 0.6146616541353384
+top_p: 0
