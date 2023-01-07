@@ -13,3 +13,4 @@ dependencies:
     - azureml-core
     - scipy
     - evaluate
+    - langchain
