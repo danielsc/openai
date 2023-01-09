@@ -13,7 +13,7 @@ For classification, below are the different models and modes that were tried. As
 | curie | fine-tune | 0.5376 | 0.5041 |
 | curie | no shot | 0.2751 | 0.2510 |
 | curie | embedding + AutoML | 0.6241 | 0.6202 |
-| davinci | no shot | 0.4763 | 0.4785 |
+| davinci | no shot | 0.4763 | 0.4789 |
 
 
 ### Hyperparameter tuning for fine-tuning is useful. 
@@ -62,6 +62,34 @@ Here a boxplot that better shows the size of the differences. On average, the di
 Looking at which accuracies are affected the most, (maybe expectedly) there is a slight increase in difference as the accuracy increases:
 
 ![](images/diff_accuracy_f1_vs_fine_tune_accuracy_f1.png)
+
+After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Any other dataset, however, shows the same difference as above. So, in some regard, the fine-tuning is overfitting to the validation dataset.
+
+### One-shot prompt crafting
+
+As is shown at the top, one-shot prompts don't yield a good result for the lower end models. However, for davinci a decent score (`f1 = 0.48`) can be achieved. But it needs to be noted that this small changes to the prompt can make a big difference. See below table for examples:
+
+|       f1 | prompt                                                                                                                                 | run_uuid                      |
+|---------:|:---------------------------------------------------------------------------------------------------------------------------------------|:------------------------------|
+| 0.478856 | From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n{text}. \n\nThe chosen category is:         | patient_plastic_6hn9lg2ft5_14 |
+| 0.473198 | From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n'{text}'. \nThe chosen category is:         | patient_plastic_6hn9lg2ft5_13 |
+| 0.456552 | From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n"{text}". \n\nThe chosen category is:       | patient_plastic_6hn9lg2ft5_11 |
+| 0.450386 | From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: {text}. The chosen category is:               | patient_plastic_6hn9lg2ft5_12 |
+| 0.439162 | Assign the following Yelp review to one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:       | patient_plastic_6hn9lg2ft5_0  |
+| 0.435711 | Assign the following Yelp review to one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:       | patient_plastic_6hn9lg2ft5_5  |
+| 0.428406 | Assign the Yelp review: \n{text} \n\n to one of the categories [1, 2, 3, 4, 5]. \nThe assigned category is:                            | patient_plastic_6hn9lg2ft5_8  |
+| 0.402765 | Classify the following Yelp review by choosing one of the categories [1, 2, 3, 4, 5]: \n{text} \nThe selected category is:             | patient_plastic_6hn9lg2ft5_7  |
+| 0.401432 | Please select one of the categories [1, 2, 3, 4, 5] to categorize the Yelp review: \n{text} \nThe chosen category is:                  | patient_plastic_6hn9lg2ft5_6  |
+| 0.373278 | For the Yelp review: \n{text} \n\n choose one of the categories [1, 2, 3, 4, 5] for classification. \nThe chosen category is:          | patient_plastic_6hn9lg2ft5_9  |
+| 0.320869 | Sort the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:       | patient_plastic_6hn9lg2ft5_3  |
+| 0.317341 | Put the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:        | patient_plastic_6hn9lg2ft5_4  |
+| 0.290357 | Place the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:      | patient_plastic_6hn9lg2ft5_2  |
+| 0.28206  | Categorize the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category: | patient_plastic_6hn9lg2ft5_1  |
+
+For this classification problem, tuning the hyperparameters improves the results only  minimally. It is, however, important to keep in mind that, while turning up the temperature increases the f1 score on average, it also increases the variance of the scores. This is shown in the graph below. The higher the temperature, the more the scores vary. The sweet spot seems to be around a temperature of 0.1, but the gains are modest and likely not worth the increased variance.
+
+![](images/zero_shot_temperature_vs_f1.png)
+
 
 ## Jobs To Be Done
 

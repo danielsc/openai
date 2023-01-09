@@ -1,0 +1,5 @@
+prompt
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n""{text}"". \n\nThe chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: {text}. The chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n'{text}'. \nThe chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n{text}. \n\nThe chosen category is:"

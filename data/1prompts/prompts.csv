@@ -1,2 +1,16 @@
-intro,shot
-"Classify the following yelp review into 1 of the following categories: categories: [1, 2, 3, 4, 5]","\n\nyelp review: {text} \n\nClassified category: {stars}"
+prompt
+"Assign the following Yelp review to one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:"
+"Categorize the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:"
+"Place the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:"
+"Sort the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:"
+"Put the following Yelp review into one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:"
+"Assign the following Yelp review to one of the following categories: [1, 2, 3, 4, 5]\nyelp review: {text} \nclassified category:"
+"Please select one of the categories [1, 2, 3, 4, 5] to categorize the Yelp review: \n{text} \nThe chosen category is:"
+"Classify the following Yelp review by choosing one of the categories [1, 2, 3, 4, 5]: \n{text} \nThe selected category is:"
+"Assign the Yelp review: \n{text} \n\n to one of the categories [1, 2, 3, 4, 5]. \nThe assigned category is:"
+"For the Yelp review: \n{text} \n\n choose one of the categories [1, 2, 3, 4, 5] for classification. \nThe chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n{text}. \n\nThe chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n""{text}"". \n\nThe chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: {text}. The chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n'{text}'. \nThe chosen category is:"
+"From the categories [1, 2, 3, 4, 5], select the one that best describes the Yelp review: \n{text}. \n\nThe chosen category is:"

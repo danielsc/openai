@@ -10,26 +10,44 @@ inputs:
   data:
     type: uri_file
     path: ../../data/1raw/yelp_test.csv
+  prompts:
+    type: uri_file
+    path: ../../data/1prompts/prompts.csv
+  prompt_number: 0
   prompt_column: text
   completion_column: stars
   
   aoai_endpoint: https://aoai.openai.azure.com/
   api_version: 2022-06-01-preview
-  completion_deployment: text-davinci-002
+  deployment: text-davinci-002
+
+  temperature: 0.9
+  max_tokens: 64
+  top_p: 1.0
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
+
 
 outputs:
   test_output:
     type: uri_file
-    
-    
+      
+
 command: >-
-  python zero_shot.py
+  python zero_shot_yelp.py
   --data ${{inputs.data}}
+  --prompts ${{inputs.prompts}}
+  --prompt_number ${{inputs.prompt_number}}
+  --test_output ${{outputs.test_output}}
   --prompt_column ${{inputs.prompt_column}}
   --completion_column ${{inputs.completion_column}}
   --aoai_endpoint ${{inputs.aoai_endpoint}}
   --api_version ${{inputs.api_version}}
-  --completion_deployment ${{inputs.completion_deployment}}
-  --test_output ${{outputs.test_output}}
+  --deployment ${{inputs.deployment}}
+  --temperature ${{inputs.temperature}}
+  --max_tokens ${{inputs.max_tokens}}
+  --top_p ${{inputs.top_p}}
+  --frequency_penalty ${{inputs.frequency_penalty}}
+  --presence_penalty ${{inputs.presence_penalty}}
     
 compute: azureml:cpu-cluster

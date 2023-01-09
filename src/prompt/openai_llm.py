@@ -3,7 +3,7 @@ import mlflow, yaml
 import pandas as pd
 import time
 from dataclasses import dataclass
-from typing import List
+from typing import List, Union
 import numpy as np
 
 def load_api_key(keyname = "openai-key"):
@@ -22,14 +22,19 @@ def load_api_key(keyname = "openai-key"):
 @dataclass
 class AzureOpenAI(mlflow.pyfunc.PythonModel):
   deployment :str
+  n : int = 1
+  best_of :int = 1
   max_tokens :int = 100
   temperature :float = 0.5
   top_p :float = 0.5
   frequency_penalty :float = 0.5
-  api_version :str = "2022-06-01-preview"
-  BATCH_SIZE :int = 20
+  presence_penalty :float = 0
+  suffix :str = None
+  stop :List[str] = None
   api_key :str = None
   api_base :str = None
+  api_version :str = "2022-06-01-preview"
+  BATCH_SIZE :int = 20
 
   def __post_init__(self):
     if self.api_key is None:
@@ -45,17 +50,21 @@ class AzureOpenAI(mlflow.pyfunc.PythonModel):
     self.url = self.api_base + "openai/deployments/" + self.deployment + "/completions?api-version=" + self.api_version
     print(f"url: {self.url}")
 
-  def call_oai_endpoint(self, context, model_input: np.array, debug=False):
+  def call_oai_endpoint(self, model_input: np.array, debug=False):
     headers={
       "api-key": self.api_key,
       "Content-Type": "application/json"
     }
     payload = {
       "prompt": list(model_input),
+      "n": self.n,
+      "best_of": self.best_of,
       "max_tokens": self.max_tokens,
       "temperature": self.temperature,
       "top_p": self.top_p,
       "frequency_penalty": self.frequency_penalty,
+      "presence_penalty": self.presence_penalty,
+      "stop": self.stop
     }    
     while True:
       print(f"sending {len(model_input)} items to url {self.url}")
@@ -88,14 +97,23 @@ class AzureOpenAI(mlflow.pyfunc.PythonModel):
     
     return [row['text'] for row in data['choices']]
 
-  def __call__(self, model_input: np.ndarray, debug=False) -> np.ndarray:
+  def __call__(self, model_input: Union[np.ndarray, str], debug=False) -> np.ndarray:
+    # make sure we have a numpy array
+    if type(model_input) is str:
+      input_array = np.array([model_input])
+    else:
+      input_array = np.array(model_input)
+
     ## need to batch to 20 -- that is the max that the service accepts
-    list_df = [model_input[i:i+self.BATCH_SIZE] for i in range(0,model_input.shape[0],self.BATCH_SIZE)]
+    list_df = [input_array[i:i+self.BATCH_SIZE] for i in range(0,input_array.shape[0],self.BATCH_SIZE)]
     scores = []
     for df in list_df:
-      scores = scores + self.call_oai_endpoint(context, df, debug)
-    # parse the stars from the completion and return an int array
-    return scores
+      scores = scores + self.call_oai_endpoint(df, debug)
+    
+    if type(model_input) is str:
+      return scores[0]
+    else:
+      return scores
 
   def predict(self, context, model_input: pd.DataFrame):
     return self.__call__(model_input)

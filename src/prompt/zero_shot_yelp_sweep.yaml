@@ -1,0 +1,80 @@
+$schema: https://azuremlschemas.azureedge.net/latest/sweepJob.schema.json
+type: sweep
+
+inputs:
+  data:
+    type: uri_file
+    path: ../../data/1raw/yelp_test.csv
+  prompts:
+    type: uri_file
+    path: ../../data/1prompts/prompts.csv
+  prompt_column: text
+  completion_column: stars
+  
+  aoai_endpoint: https://aoai.openai.azure.com/
+  api_version: 2022-06-01-preview
+  deployment: text-davinci-002
+
+  max_tokens: 5
+
+
+outputs:
+  test_output:
+    type: uri_file
+  
+search_space:
+  prompt_number:
+    type: choice
+    values: [14]
+  temperature:
+    type: choice
+    values: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+  top_p: 
+    type: choice
+    values: [1]
+  frequency_penalty: 
+    type: choice
+    values: [0]
+  presence_penalty: 
+    type: choice
+    values: [0]
+  fake:
+    type: choice
+    values: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+
+trial:
+  environment:
+    image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+    conda_file: ../../conda.yml
+
+  code: .
+
+  command: >-
+    python zero_shot_yelp.py
+    --data ${{inputs.data}}
+    --prompts ${{inputs.prompts}}
+    --prompt_number ${{search_space.prompt_number}}
+    --test_output ${{outputs.test_output}}
+    --prompt_column ${{inputs.prompt_column}}
+    --completion_column ${{inputs.completion_column}}
+    --aoai_endpoint ${{inputs.aoai_endpoint}}
+    --api_version ${{inputs.api_version}}
+    --deployment ${{inputs.deployment}}
+    --temperature ${{search_space.temperature}}
+    --max_tokens ${{inputs.max_tokens}}
+    --top_p ${{search_space.top_p}}
+    --frequency_penalty ${{search_space.frequency_penalty}}
+    --presence_penalty ${{search_space.presence_penalty}}
+      
+compute: azureml:cpu-cluster
+
+objective: 
+  goal: maximize
+  primary_metric: f1
+
+sampling_algorithm:
+  type: grid
+
+limits:
+  max_total_trials: 200
+  max_concurrent_trials: 10
