@@ -1,11 +1,7 @@
 import pandas as pd
-import numpy as np
-import openai
 import argparse
 import mlflow
-from langchain.prompts import PromptTemplate, FewShotPromptTemplate
 from openai_llm import AzureOpenAI
-from tqdm import tqdm
 import matplotlib.pyplot as plt
 import tempfile
 from util import get_examples, classify_yelp_fsp_batch, calculate_metrics, save_yaml
