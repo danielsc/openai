@@ -1,0 +1,10 @@
+prefix,template,suffix
+"You are given a dataset of Yelp reviews, and your task is to classify them into one of five categories: 1 star, 2 stars, 3 stars, 4 stars, and 5 stars. You are provided with a small number of labeled examples to use as a reference, and you must use these to classify the rest of the reviews.
+
+For example, you might be given the following labeled examples:
+
+","Review {n}: ""{review}"" (label: {stars} stars)","Based on these examples, you should be able to classify the following review:
+
+Review: {text}
+
+label: "

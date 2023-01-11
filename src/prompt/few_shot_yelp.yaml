@@ -9,11 +9,17 @@ code: .
 inputs:
   data:
     type: uri_file
-    path: ../../data/1raw/yelp_test.csv
+    path: ../../data/1raw/yelp_9.csv
   prompts:
     type: uri_file
     path: ../../data/1prompts/few_shot_prompts.csv
-  prompt_number: 1
+  prompt_number: 0
+  examples:
+    type: uri_file
+    path: ../../data/1raw/yelp_small.csv
+  examples_number: 1
+  seed: 620281
+
   prompt_column: text
   completion_column: stars
   
@@ -31,14 +37,15 @@ inputs:
 outputs:
   test_output:
     type: uri_file
-      
 
 command: >-
-  python zero_shot_yelp.py
+  python few_shot_yelp.py
   --data ${{inputs.data}}
   --prompts ${{inputs.prompts}}
   --prompt_number ${{inputs.prompt_number}}
-  --test_output ${{outputs.test_output}}
+  --examples ${{inputs.examples}}
+  --examples_number ${{inputs.examples_number}}
+  --seed ${{inputs.seed}}
   --prompt_column ${{inputs.prompt_column}}
   --completion_column ${{inputs.completion_column}}
   --aoai_endpoint ${{inputs.aoai_endpoint}}
@@ -49,5 +56,6 @@ command: >-
   --top_p ${{inputs.top_p}}
   --frequency_penalty ${{inputs.frequency_penalty}}
   --presence_penalty ${{inputs.presence_penalty}}
+  --test_output ${{outputs.test_output}}
     
 compute: azureml:cpu-cluster

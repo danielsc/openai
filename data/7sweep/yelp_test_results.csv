@@ -1,4 +1,4 @@
-Model,Technique,Accuracy,F1 Score
+Model,Technique,Accuracy,F1 Score,job
 ada,fine-tune,0.5263,0.4855
 babbage,fine-tune,0.6147,0.6042
 curie,zero shot,0.2751,0.251
@@ -6,3 +6,6 @@ curie,embedding + AutoML,0.6241,0.6202
 curie,fine-tune,0.5376,0.5041
 davinci,zero shot,0.4763,0.4785
 ada,zero shot,0.1095,0.0482
+ada,few shot,0.4231,0.4068,patient_ship_3dg6gh430b_89
+curie,few shot,0.5799,0.5768,jolly_rhythm_cnryl9j3f0_83
+davinci,few shot,0.7278,0.7268,zen_candle_x9l37c7hs0_277

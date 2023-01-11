@@ -1,19 +1,27 @@
 ## Findings
 
+### The Task
+
+The task is text classification of Yelp reviews -- the review text is given and it has to categorized into a 5 star rating. The dataset is a 10000 review subset of the full Yelp dataset with all features but `text` and `stars` removed. The dataset was downloaded from [Kaggle](https://www.kaggle.com/code/omkarsabnis/sentiment-analysis-on-the-yelp-reviews-dataset/data) and can be seen [here](data/1raw/yelp.csv)
+
 ### Fine-tuning is useful.
 
-For classification, below are the different models and modes that were tried. As can be seen, **zero shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely tops out on babbage with curie performing worse. **Embedding + AutoML**, however, works very well on curie. 
+For classification, below are the different models and modes that were tried. As can be seen, **zero shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely tops out on babbage with curie performing worse. **Embedding + AutoML**, however, works very well on curie. **few shot** is doing amazingly well on davinci reaching a level that is close to the state of the art for the task ([see here](https://paperswithcode.com/sota/text-classification-on-yelp-5)).
 
 ![](images/yelp_test_f1.png)
 
-| Model | Technique | Accuracy | F1 Score |
-| --- | --- | -- | -- |
-| ada | fine-tune | 0.5263 | 0.4855 |
-| babbage | fine-tune | 0.5733 | 0.5669 |
-| curie | fine-tune | 0.5376 | 0.5041 |
-| curie | no shot | 0.2751 | 0.2510 |
-| curie | embedding + AutoML | 0.6241 | 0.6202 |
-| davinci | no shot | 0.4763 | 0.4789 |
+|    | Model   | Technique          |   Accuracy |   F1 Score | job                        |
+|---:|:--------|:-------------------|-----------:|-----------:|:---------------------------|
+|  0 | ada     | fine-tune          |     0.5263 |     0.4855 | nan                        |
+|  6 | ada     | zero shot          |     0.1095 |     0.0482 | nan                        |
+|  7 | ada     | few shot           |     0.4231 |     0.4068 | patient_ship_3dg6gh430b_89 |
+|  1 | babbage | fine-tune          |     0.6147 |     0.6042 | nan                        |
+|  2 | curie   | zero shot          |     0.2751 |     0.251  | nan                        |
+|  3 | curie   | embedding + AutoML |     0.6241 |     0.6202 | nan                        |
+|  4 | curie   | fine-tune          |     0.5376 |     0.5041 | nan                        |
+|  8 | curie   | few shot           |     0.5799 |     0.5768 | jolly_rhythm_cnryl9j3f0_83 |
+|  5 | davinci | zero shot          |     0.4763 |     0.4785 | nan                        |
+|  9 | davinci | few shot           |     0.7278 |     0.7268 | zen_candle_x9l37c7hs0_277  |
 
 
 ### Hyperparameter tuning for fine-tuning is useful. 
@@ -37,7 +45,7 @@ For classification, below are the different models and modes that were tried. As
 
 ## Issues:
 
-- AOAI: Having only accuracy and f1_score as metrics to evaluate is quite limiting. In the case of a Yelp 1-5 rating, it seems that MSE might be a better metric to optimize for. Not sure if modeling this as a regression task would be feasible or advised with OpenAI. 
+- AOAI: Having only accuracy and f1_score as metrics to evaluate is quite limiting. In the case of a Yelp 1-5 rating, it seems that RMSE might be a better metric to optimize for. Not sure if modeling this as a regression task would be feasible or advised with OpenAI. 
 
 - AzureML: To enable early stopping, we need to allow the job to react to cancellation by hyperdrive, such that the fine_tune operation on the AOAI side get's cancelled, too (https://msdata.visualstudio.com/Vienna/_workitems/edit/1351560)
 
@@ -65,9 +73,9 @@ Looking at which accuracies are affected the most, (maybe expectedly) there is a
 
 After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Any other dataset, however, shows the same difference as above. So, in some regard, the fine-tuning is overfitting to the validation dataset.
 
-### One-shot prompt crafting
+### Zero-shot prompt crafting
 
-As is shown at the top, one-shot prompts don't yield a good result for the lower end models. However, for davinci a decent score (`f1 = 0.48`) can be achieved. But it needs to be noted that this small changes to the prompt can make a big difference. See below table for examples:
+As is shown at the top, zero-shot prompts don't yield a good result for the lower end models. However, for davinci a decent score (`f1 = 0.48`) can be achieved. But it needs to be noted that small changes to the prompt can make a big difference. See below table for examples:
 
 |       f1 | prompt                                                                                                                                 | run_uuid                      |
 |---------:|:---------------------------------------------------------------------------------------------------------------------------------------|:------------------------------|
@@ -89,6 +97,70 @@ As is shown at the top, one-shot prompts don't yield a good result for the lower
 For this classification problem, tuning the hyperparameters improves the results only  minimally. It is, however, important to keep in mind that, while turning up the temperature increases the f1 score on average, it also increases the variance of the scores. This is shown in the graph below. The higher the temperature, the more the scores vary. The sweet spot seems to be around a temperature of 0.1, but the gains are modest and likely not worth the increased variance.
 
 ![](images/zero_shot_temperature_vs_f1.png)
+
+
+### Few-shot prompt crafting
+
+Through few-shot prompt crafting it is possible to improve the quality significantly over zero shot and the overall best results (so fare) are achieved with a Davinci model. It does matter which examples are being used -- interestingly more than the number. 
+
+From a set of 2658 examples, a fixed number was sampled (1, 3, 5, 7, or 9) and they were used to score the test dataset of 531 items. To save money, it is deliberately a bit small and probably accounts for some inaccuracy in the numbers, but it suffices as an indicator of the impact of choosing different samples on the performance of the model. 
+
+![](images/few_shot_examples_vs_f1.png)
+
+The above shows 2 things:
+Firstly, does matter quite a bit, which examples are sampled -- even with just one example, the difference between the best prompt and the worst prompt is 7 percentage points. 
+
+To illustrate, the folling example prompt yields an f1 score of `0.6982814` ([placid_energy_hzkj1x77wl_85](https://ml.azure.com/runs/placid_energy_hzkj1x77wl_85?wsid=/subscriptions/15ae9cb6-95c1-483d-a0e3-b1a1a3b06324/resourcegroups/ray/workspaces/ray)):
+
+    You are given a dataset of Yelp reviews, and your task is to classify them into one of five categories: 1 star, 2 stars, 3 stars, 4 stars, and 5 stars. You are provided with a small number of labeled examples to use as a reference, and you must use these to classify the rest of the reviews.
+
+    For example, you might be given the following labeled examples:
+
+    Review 1: "It seems like there is not as much value for your dollar at Gold Medal.  We had been there since the new school opened but decided to move on.  We got a 'can't we get you to stay' call which felt like desperation on their part.  My daughter enjoyed her lessons but her favorite teacher left (as most do) and the cost was not worth it anymore.  I would not recommend them to my friends." (label: 2 stars)
+
+    Review 2: "We started each morning of our vacation at The Breakfast Club.  Everything was so tasty; juices are fresh-squeezed.  Menu has quite a variety and portions are very filling  It gets busy early.  Be sure to give it a try." (label: 5 stars)
+
+    Review 3: "The main reason to miss a star is that the one that we ordered (the mint-lamb) was a bit dry to my taste and no mint to taste at all. For desert we had the apple one and that was much better. I'd like to try a different one some other time and compare :).\n\nGood environment, and for groups, friendly staff who would explain you what they are cooking!!" (label: 3 stars)
+
+    Based on these examples, you should be able to classify the following review:
+
+    Review: {text}
+
+    label: 
+
+And for contrast, this prompt yields an f1 score of `0.6151146` ([placid_energy_hzkj1x77wl_16](https://ml.azure.com/runs/placid_energy_hzkj1x77wl_16?wsid=/subscriptions/15ae9cb6-95c1-483d-a0e3-b1a1a3b06324/resourcegroups/ray/workspaces/ray)):
+
+    You are given a dataset of Yelp reviews, and your task is to classify them into one of five categories: 1 star, 2 stars, 3 stars, 4 stars, and 5 stars. You are provided with a small number of labeled examples to use as a reference, and you must use these to classify the rest of the reviews.
+
+    For example, you might be given the following labeled examples:
+
+    Review 1: "Good coffee and they always take care of what i need in a timely manner. Never mind the fact it is literally 20 yards from my front door, but that may play into my liking of the establishment.  Either way you should check it out and enjoy some free Wifi." (label: 4 stars)
+
+    Review 2: "Loved the winkie!  Eat your vegan meal next door at Green and stroll over to Nami for dessert." (label: 5 stars)
+
+    Review 3: "I stopped in here at 6:45am one morning and was told I was a bit early.  I'm used to coffee shops opening earlier I guess, but they were nice about it and invited me in to sit and wait. \n\nI liked their stacks of Latin American Vogue, and the artwork on the walls was nice.  They also had ice water out for you to serve yourself. \n\nI ordered my usual americano, and was pleased.  They have raw sugar you can serve yourself by the heaping spoonful out of a pretty candy dish.  That was lovely.\n\nAlso, they are now the only place to carry Sweet Peas Bakery items.  My favorite thing to do was walk down to Danielle's shop downtown and pick up some coffee at Royal and some of her Rosemary Shortbread cookies.  It doesn't sound yummy, but believe me they are!  Be sure to ask for some. \n\nAt the time I went, the place was obviously not crowded and I received attentive service..." (label: 3 stars)
+
+    Review 4: "We went to American Junkie after we found a 50% discount from http://www.restaurant.com. They couldn't pay us to go back.\n\nIf you like velvet ropes, not being able to talk to the person next to you because the music is so loud, and being around people who are really into themselves, American Junkie is your spot." (label: 1 star)
+
+    Review 5: "I got the banana nutella cupcake and love the banana bread-like cupcake. However, the frosting is way too sweet and overpowers the banana flavor of the cupcake. As many reviewers have already mentioned, the cupcake is also over-priced at $3.75 each for the size and the lack of creativity. \nWith so many desert/snack places in Scottsdale, I am unlikely to come back here." (label: 2 stars)
+
+    Based on these examples, you should be able to classify the following review:
+
+    Review: {text}
+
+    label: 
+
+It is not clear what makes the first prompt so much better than the second one (maybe the sarcasm in Review 4 is lost on Davinci), in any case, finding the best prompt (or one close) is clearly a matter systematic experimentation.
+
+Secondly, the number of examples used matters far less than their contents. It does matter whether 1 or more than one example is chose, but the distributions of the f1 values for 3 or more examples are not statistically significantly different (7 and 9 are barely stat sig.):
+
+|  p values  |           1 |           3 |          5 |           7 |          9 |
+|---:|------------:|------------:|-----------:|------------:|-----------:|
+|  1 | 1           | 3.16601e-05 | 0.00150419 | 6.62454e-06 | 0.00235842 |
+|  3 |  | 1           | 0.306457   | 0.542522    | 0.0858296  |
+|  5 |   |     | 1          | 0.122199    | 0.58932    |
+|  7 |               |     |    | 1           | 0.0243348  |
+|  9 |  |   |    |    | 1          |
 
 
 ## Jobs To Be Done

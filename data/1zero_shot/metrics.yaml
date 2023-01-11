@@ -4,9 +4,111 @@ completion_column: stars
 completion_deployment: text-davinci-002
 data: ./data/1raw/yelp_mini.csv
 metrics:
-  accuracy: 0.3611111111111111
-  f1: 0.3558080808080808
-  precision: 0.6034722222222223
-  recall: 0.3611111111111111
+  accuracy: 0.7777777777777778
+  f1: 0.7778105249369617
+  precision: 0.7903540903540903
+  recall: 0.7777777777777778
+prompt: !!python/object:pandas.core.series.Series
+  _flags:
+    allows_duplicate_labels: true
+  _metadata:
+  - name
+  _mgr: !!python/object/new:pandas.core.internals.managers.SingleBlockManager
+    state: !!python/tuple
+    - &id004
+      - !!python/object/apply:pandas.core.indexes.base._new_Index
+        - &id003 !!python/name:pandas.core.indexes.base.Index ''
+        - data: !!python/object/apply:numpy.core.multiarray._reconstruct
+            args:
+            - &id001 !!python/name:numpy.ndarray ''
+            - !!python/tuple
+              - 0
+            - !!binary |
+              Yg==
+            state: !!python/tuple
+            - 1
+            - !!python/tuple
+              - 3
+            - &id002 !!python/object/apply:numpy.dtype
+              args:
+              - O8
+              - false
+              - true
+              state: !!python/tuple
+              - 3
+              - '|'
+              - null
+              - null
+              - null
+              - -1
+              - -1
+              - 63
+            - false
+            - - prefix
+              - template
+              - suffix
+          name: null
+    - - &id005 !!python/object/apply:numpy.core.multiarray._reconstruct
+        args:
+        - *id001
+        - !!python/tuple
+          - 0
+        - !!binary |
+          Yg==
+        state: !!python/tuple
+        - 1
+        - !!python/tuple
+          - 3
+        - *id002
+        - false
+        - - 'You are given a dataset of Yelp reviews, and your task is to classify
+            them into one of five categories: 1 star, 2 stars, 3 stars, 4 stars, and
+            5 stars. You are provided with a small number of labeled examples to use
+            as a reference, and you must use these to classify the rest of the reviews.
+
+
+            For example, you might be given the following labeled examples:
+
+
+            '
+          - 'Review {n}: "{review}" (label: {stars} stars)'
+          - 'Based on these examples, you should be able to classify the following
+            review:
+
+
+            Review: {text}
+
+
+            label: '
+    - - !!python/object/apply:pandas.core.indexes.base._new_Index
+        - *id003
+        - data: !!python/object/apply:numpy.core.multiarray._reconstruct
+            args:
+            - *id001
+            - !!python/tuple
+              - 0
+            - !!binary |
+              Yg==
+            state: !!python/tuple
+            - 1
+            - !!python/tuple
+              - 3
+            - *id002
+            - false
+            - - prefix
+              - template
+              - suffix
+          name: null
+    - 0.14.1:
+        axes: *id004
+        blocks:
+        - mgr_locs: !!python/object/apply:builtins.slice
+          - 0
+          - 3
+          - 1
+          values: *id005
+  _typ: series
+  attrs: {}
+  name: 0
 prompt_column: text
 test_output: ./data/1zero_shot/metrics.yaml

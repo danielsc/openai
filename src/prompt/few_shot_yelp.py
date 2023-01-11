@@ -3,35 +3,21 @@ import numpy as np
 import openai
 import argparse
 import mlflow
-from langchain.prompts import PromptTemplate
+from langchain.prompts import PromptTemplate, FewShotPromptTemplate
 from openai_llm import AzureOpenAI
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import tempfile
-from util import find_first_number, calculate_metrics, save_yaml
-
-
-def classify_yelp_batch(llm, 
-                        texts,
-                        prompt, 
-                        batch_size=20):
-    results = []
-    input_prompt = PromptTemplate(input_variables=["text"], template=prompt)
-
-    for i in tqdm(range(0, len(texts), batch_size)):
-        prompts = [ input_prompt.format(text=text) for text in texts[i:i+batch_size]]
-        batch_results = llm(prompts)
-        batch_results = [find_first_number(item) for item in batch_results]
-        results.extend(batch_results)
-    return results
-
-
+from util import get_examples, classify_yelp_fsp_batch, calculate_metrics, save_yaml
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", default="./data/1raw/yelp_mini.csv")
     parser.add_argument("--prompts", default="./data/1prompts/few_shot_prompts.csv")
-    parser.add_argument("--prompt_number", default=1, type=int)
+    parser.add_argument("--prompt_number", default=0, type=int)
+    parser.add_argument("--examples", default="./data/1raw/yelp_mini.csv")
+    parser.add_argument("--examples_number", default=7, type=int)
+    parser.add_argument("--seed", default=42, type=int)
     parser.add_argument("--test_output", default="./data/1zero_shot/metrics.yaml")
     parser.add_argument("--prompt_column", default="text")
     parser.add_argument("--completion_column", default="stars")
@@ -55,6 +41,9 @@ if __name__ == "__main__":
         "api_version": args.api_version,
         "deployment": args.deployment,
         "prompt_number": args.prompt_number,
+        "examples": args.examples,
+        "examples_number": args.examples_number,
+        "seed": args.seed,
         "prompts": args.prompts,
         "temperature": args.temperature,
         "max_tokens": args.max_tokens,
@@ -71,7 +60,10 @@ if __name__ == "__main__":
     
     # get prompt
     prompts = pd.read_csv(args.prompts)
-    prompt = prompts.iloc[args.prompt_number]['prompt']
+    prompt = prompts.iloc[args.prompt_number]
+    template=prompt.template
+    prefix=prompt.prefix
+    suffix=prompt.suffix
     print(f"prompt: {prompt}")
     mlflow.log_param("prompt", prompt[:1000])
 
@@ -83,9 +75,16 @@ if __name__ == "__main__":
                       frequency_penalty=args.frequency_penalty,
                       presence_penalty=args.presence_penalty)
 
-    results = classify_yelp_batch(llm=llm,
-                                  texts=df[args.prompt_column].values, 
-                                  prompt=prompt)
+    # get examples
+    examples = get_examples(args.examples, args.examples_number, args.seed, args.prompt_column, args.completion_column)
+    print(f"examples: {examples}")
+  
+    results = classify_yelp_fsp_batch(llm=llm,
+                                      texts=df[args.prompt_column].values, 
+                                      examples=examples,
+                                      prefix=prefix,
+                                      template=template,
+                                      suffix=suffix)
 
     df['prediction'] = results
     print(df[['prediction','stars']])

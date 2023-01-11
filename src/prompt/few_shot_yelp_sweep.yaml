@@ -1,0 +1,85 @@
+$schema: https://azuremlschemas.azureedge.net/latest/sweepJob.schema.json
+type: sweep
+
+inputs:
+  data:
+    type: uri_file
+    path: ../../data/1raw/yelp_validation.csv
+  prompts:
+    type: uri_file
+    path: ../../data/1prompts/few_shot_prompts.csv
+  prompt_number: 0
+  examples:
+    type: uri_file
+    path: ../../data/1raw/yelp_small.csv
+
+
+  prompt_column: text
+  completion_column: stars
+  
+  aoai_endpoint: https://aoai.openai.azure.com/
+  api_version: 2022-06-01-preview
+  deployment: text-davinci-002
+  # text-ada-001
+  # text-curie-001 
+  # text-davinci-002
+
+  temperature: 0
+  max_tokens: 64
+  top_p: 1
+  frequency_penalty: 0
+  presence_penalty: 0
+
+
+outputs:
+  test_output:
+    type: uri_file
+
+search_space:
+  examples_number: 
+    type: choice
+    values: [1, 3, 5, 7, 9]
+  seed: 
+    type: randint
+    upper: 1000000
+
+trial:
+  command: >-
+    python few_shot_yelp.py
+    --data ${{inputs.data}}
+    --prompts ${{inputs.prompts}}
+    --prompt_number ${{inputs.prompt_number}}
+    --examples ${{inputs.examples}}
+    --examples_number ${{search_space.examples_number}}
+    --seed ${{search_space.seed}}
+    --prompt_column ${{inputs.prompt_column}}
+    --completion_column ${{inputs.completion_column}}
+    --aoai_endpoint ${{inputs.aoai_endpoint}}
+    --api_version ${{inputs.api_version}}
+    --deployment ${{inputs.deployment}}
+    --temperature ${{inputs.temperature}}
+    --max_tokens ${{inputs.max_tokens}}
+    --top_p ${{inputs.top_p}}
+    --frequency_penalty ${{inputs.frequency_penalty}}
+    --presence_penalty ${{inputs.presence_penalty}}
+    --test_output ${{outputs.test_output}}
+      
+
+  environment:
+    image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+    conda_file: ../../conda.yml
+
+  code: .
+  
+compute: azureml:cpu-cluster
+
+limits:
+  max_total_trials: 100
+  max_concurrent_trials: 10
+
+objective:
+    goal: maximize
+    primary_metric: f1 
+
+sampling_algorithm:
+  type: random
