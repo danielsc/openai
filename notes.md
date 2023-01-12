@@ -10,18 +10,18 @@ For classification, below are the different models and modes that were tried. As
 
 ![](images/yelp_test_f1.png)
 
-|    | Model   | Technique          |   Accuracy |   F1 Score | job                        |
-|---:|:--------|:-------------------|-----------:|-----------:|:---------------------------|
-|  0 | ada     | fine-tune          |     0.5263 |     0.4855 | nan                        |
-|  6 | ada     | zero shot          |     0.1095 |     0.0482 | nan                        |
-|  7 | ada     | few shot           |     0.4231 |     0.4068 | patient_ship_3dg6gh430b_89 |
-|  1 | babbage | fine-tune          |     0.6147 |     0.6042 | nan                        |
-|  2 | curie   | zero shot          |     0.2751 |     0.251  | nan                        |
-|  3 | curie   | embedding + AutoML |     0.6241 |     0.6202 | nan                        |
-|  4 | curie   | fine-tune          |     0.5376 |     0.5041 | nan                        |
-|  8 | curie   | few shot           |     0.5799 |     0.5768 | jolly_rhythm_cnryl9j3f0_83 |
-|  5 | davinci | zero shot          |     0.4763 |     0.4785 | nan                        |
-|  9 | davinci | few shot           |     0.7278 |     0.7268 | zen_candle_x9l37c7hs0_277  |
+| Model   | Technique          |   Accuracy |   F1 Score | job                         |
+|:--------|:-------------------|-----------:|-----------:|:----------------------------|
+| ada     | fine-tune          |     0.5263 |     0.4855 | nan                         |
+| ada     | zero shot          |     0.1095 |     0.0482 | nan                         |
+| ada     | few shot           |     0.4231 |     0.4068 | patient_ship_3dg6gh430b_89  |
+| babbage | fine-tune          |     0.6147 |     0.6042 | nan                         |
+| curie   | zero shot          |     0.2751 |     0.251  | nan                         |
+| curie   | embedding + AutoML |     0.6241 |     0.6202 | nan                         |
+| curie   | fine-tune          |     0.5376 |     0.5041 | nan                         |
+| curie   | few shot           |     0.5799 |     0.5768 | jolly_rhythm_cnryl9j3f0_83  |
+| davinci | zero shot          |     0.4763 |     0.4785 | nan                         |
+| davinci | few shot           |     0.6992 |     0.6982 | placid_energy_hzkj1x77wl_85 |
 
 
 ### Hyperparameter tuning for fine-tuning is useful. 
@@ -71,7 +71,7 @@ Looking at which accuracies are affected the most, (maybe expectedly) there is a
 
 ![](images/diff_accuracy_f1_vs_fine_tune_accuracy_f1.png)
 
-After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Any other dataset, however, shows the same difference as above. So, in some regard, the fine-tuning is overfitting to the validation dataset.
+After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Most other datasets sampled from the full yelp-5 dataset, however, show the same difference as above. So, it seesm that the fine-tuning is overfitting on the validation dataset (or that the valdiation set is not sufficiently representative of the overall dataset) -- in any case, a larger validation dataset should fix the issue. 
 
 ### Zero-shot prompt crafting
 

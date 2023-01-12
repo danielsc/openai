@@ -8,4 +8,4 @@ davinci,zero shot,0.4763,0.4785
 ada,zero shot,0.1095,0.0482
 ada,few shot,0.4231,0.4068,patient_ship_3dg6gh430b_89
 curie,few shot,0.5799,0.5768,jolly_rhythm_cnryl9j3f0_83
-davinci,few shot,0.7278,0.7268,zen_candle_x9l37c7hs0_277
+davinci,few shot,0.6992,0.6982,placid_energy_hzkj1x77wl_85
