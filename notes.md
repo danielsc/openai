@@ -71,7 +71,7 @@ Looking at which accuracies are affected the most, (maybe expectedly) there is a
 
 ![](images/diff_accuracy_f1_vs_fine_tune_accuracy_f1.png)
 
-After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Most other datasets sampled from the full yelp-5 dataset, however, show the same difference as above. So, it seesm that the fine-tuning is overfitting on the validation dataset (or that the valdiation set is not sufficiently representative of the overall dataset) -- in any case, a larger validation dataset should fix the issue. 
+After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Most other datasets sampled from the full yelp-5 dataset, however, show a significatn deviation as shown above. So, it seems that the fine-tuning is overfitting on the validation dataset (or that the valdiation set is not sufficiently representative of the overall dataset). It is only 532 records (which is 5% of the dataset) -- a larger validation dataset should likely fix the issue. 
 
 ### Zero-shot prompt crafting
 
