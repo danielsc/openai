@@ -152,7 +152,7 @@ And for contrast, this prompt yields an f1 score of `0.6151146` ([placid_energy_
 
 It is not clear what makes the first prompt so much better than the second one (maybe the sarcasm in Review 4 is lost on Davinci), in any case, finding the best prompt (or one close) is clearly a matter systematic experimentation.
 
-Secondly, the number of examples used matters far less than their contents. It does matter whether 1 or more than one example is chose, but the distributions of the f1 values for 3 or more examples are not statistically significantly different (7 and 9 are barely stat sig.):
+The second finding from the above graph is that the the number of examples used matters far less than their contents. It does matter whether 1 or more than one example is chosen, but things get quite ambiguous for more than 3. The table below shows the p_values of a t-test comparing the distributions of the f1 values the different numbers of examples. As can be seen, except for 1, there distributions are not statistically significantly different (7 and 9 are barely stat sig.):
 
 |  p values  |           1 |           3 |          5 |           7 |          9 |
 |---:|------------:|------------:|-----------:|------------:|-----------:|
