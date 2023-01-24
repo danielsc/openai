@@ -10,18 +10,17 @@ For classification, below are the different models and modes that were tried. As
 
 | Model   | Technique          |   Accuracy |   F1 Score | job                         |
 |:--------|:-------------------|-----------:|-----------:|:----------------------------|
-| ada     | fine-tune          |   0.5263   |   0.4855   | nan                         |
-| ada     | embedding + AutoML |   0.619535 |   0.612792 | musing_cart_wjzb12p2        |
-| ada     | zero shot          |   0.1095   |   0.0482   | nan                         |
-| ada     | few shot           |   0.4231   |   0.4068   | patient_ship_3dg6gh430b_89  |
-| babbage | fine-tune          |   0.6147   |   0.6042   | shy_picture_b0gpxgmn        |
-| curie   | zero shot          |   0.2751   |   0.251    | nan                         |
-| curie   | embedding + AutoML |   0.628976 |   0.624561 | stoic_screw_jw6bywsn        |
-| curie   | fine-tune          |   0.5376   |   0.5041   | nan                         |
-| curie   | few shot           |   0.5799   |   0.5768   | jolly_rhythm_cnryl9j3f0_83  |
-| davinci | zero shot          |   0.4763   |   0.481823 | careful_lime_ds0qyvgj4g_94  |
-| davinci | few shot           |   0.6992   |   0.6982   | placid_energy_hzkj1x77wl_85 |
-
+| ada     | fine-tune          |     0.5263 |     0.4855 | nan                         |
+| ada     | embedding + AutoML |     0.6195 |     0.6127 | musing_cart_wjzb12p2        |
+| ada     | zero shot          |     0.1095 |     0.0482 | nan                         |
+| ada     | few shot           |     0.4231 |     0.4068 | patient_ship_3dg6gh430b_89  |
+| babbage | fine-tune          |     0.6147 |     0.6042 | shy_picture_b0gpxgmn        |
+| curie   | zero shot          |     0.2751 |     0.2510 | nan                         |
+| curie   | embedding + AutoML |     0.6289 |     0.6245 | stoic_screw_jw6bywsn        |
+| curie   | fine-tune          |     0.5376 |     0.5041 | nan                         |
+| curie   | few shot           |     0.5799 |     0.5768 | jolly_rhythm_cnryl9j3f0_83  |
+| davinci | zero shot          |     0.4763 |     0.4818 | careful_lime_ds0qyvgj4g_94  |
+| davinci | few shot           |     0.6992 |     0.6982 | placid_energy_hzkj1x77wl_85 |
 
 ## Zero-shot prompt crafting
 
