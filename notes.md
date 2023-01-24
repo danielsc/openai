@@ -173,6 +173,18 @@ Looking at which accuracies are affected the most, (maybe expectedly) there is a
 
 After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Most other datasets sampled from the full yelp-5 dataset, however, show a significatn deviation as shown above. So, it seems that the fine-tuning is overfitting on the validation dataset (or that the valdiation set is not sufficiently representative of the overall dataset). It is only 532 records (which is 5% of the dataset) -- a larger validation dataset should likely fix the issue. 
 
+### Issues:
+
+- AOAI: Having only accuracy and f1_score as metrics to evaluate is quite limiting. In the case of a Yelp 1-5 rating, it seems that RMSE might be a better metric to optimize for. Not sure if modeling this as a regression task would be feasible or advised with OpenAI. 
+
+- AzureML: To enable early stopping, we need to allow the job to react to cancellation by hyperdrive, such that the fine_tune operation on the AOAI side get's cancelled, too (https://msdata.visualstudio.com/Vienna/_workitems/edit/1351560)
+
+- AzureML: cannot see other than primary metric in the table of trials
+
+- AOAI: Where is the reference documentation for the AOAI Python SDK? 
+
+- AOAI: Where is the documenation for the Azure-specific extensions to the AOAI service, for instance hyperparameters to control **LORA**?
+
 ## Embedding
 
 Using LLMs to extract an embedding is a very simple way to arrive at surprisingly good results even with the lowest end model (ada). The whole dataset is being passed through the model and the resulting embedding is being used to train a simple classifier model. I used AutoML to do the optimization of the classifier model for me.
@@ -186,17 +198,6 @@ Ada provides a 1024 dimensional embedding while davinci provides a 2048 dimensio
 
 Currently we don't offer embeddings for davinci or babbage on the AOAI service.
 
-### Issues:
-
-- AOAI: Having only accuracy and f1_score as metrics to evaluate is quite limiting. In the case of a Yelp 1-5 rating, it seems that RMSE might be a better metric to optimize for. Not sure if modeling this as a regression task would be feasible or advised with OpenAI. 
-
-- AzureML: To enable early stopping, we need to allow the job to react to cancellation by hyperdrive, such that the fine_tune operation on the AOAI side get's cancelled, too (https://msdata.visualstudio.com/Vienna/_workitems/edit/1351560)
-
-- AzureML: cannot see other than primary metric in the table of trials
-
-- AOAI: Where is the reference documentation for the AOAI Python SDK? 
-
-- AOAI: Where is the documenation for the Azure-specific extensions to the AOAI service, for instance hyperparameters to control **LORA**?
 
 ## Jobs To Be Done
 
