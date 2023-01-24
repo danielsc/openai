@@ -1,7 +1,7 @@
 Model,Technique,Accuracy,F1 Score,job
 ada,fine-tune,0.5263,0.4855
 ada,embedding + AutoML,0.6195351,0.6127919,musing_cart_wjzb12p2
-babbage,fine-tune,0.6147,0.6042
+babbage,fine-tune,0.6147,0.6042,shy_picture_b0gpxgmn
 curie,zero shot,0.2751,0.251
 curie,embedding + AutoML,0.6289760,0.6245609,stoic_screw_jw6bywsn
 curie,fine-tune,0.5376,0.5041

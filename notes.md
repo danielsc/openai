@@ -14,7 +14,7 @@ For classification, below are the different models and modes that were tried. As
 | ada     | embedding + AutoML |   0.619535 |   0.612792 | musing_cart_wjzb12p2        |
 | ada     | zero shot          |   0.1095   |   0.0482   | nan                         |
 | ada     | few shot           |   0.4231   |   0.4068   | patient_ship_3dg6gh430b_89  |
-| babbage | fine-tune          |   0.6147   |   0.6042   | nan                         |
+| babbage | fine-tune          |   0.6147   |   0.6042   | shy_picture_b0gpxgmn        |
 | curie   | zero shot          |   0.2751   |   0.251    | nan                         |
 | curie   | embedding + AutoML |   0.628976 |   0.624561 | stoic_screw_jw6bywsn        |
 | curie   | fine-tune          |   0.5376   |   0.5041   | nan                         |
