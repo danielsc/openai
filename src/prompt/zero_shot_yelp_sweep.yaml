@@ -24,11 +24,12 @@ outputs:
   
 search_space:
   prompt_number:
-    type: choice
-    values: [14]
+    type: randint
+    upper: 13
   temperature:
-    type: choice
-    values: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    type: uniform
+    min_value: 0
+    max_value: 1
   top_p: 
     type: choice
     values: [1]
@@ -38,9 +39,6 @@ search_space:
   presence_penalty: 
     type: choice
     values: [0]
-  fake:
-    type: choice
-    values: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 
 trial:
   environment:
@@ -76,5 +74,5 @@ sampling_algorithm:
   type: grid
 
 limits:
-  max_total_trials: 200
+  max_total_trials: 100
   max_concurrent_trials: 10

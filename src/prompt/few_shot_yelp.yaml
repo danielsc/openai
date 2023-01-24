@@ -23,8 +23,6 @@ inputs:
   prompt_column: text
   completion_column: stars
   
-  aoai_endpoint: https://aoai.openai.azure.com/
-  api_version: 2022-06-01-preview
   deployment: text-davinci-002
 
   temperature: 0
@@ -48,8 +46,6 @@ command: >-
   --seed ${{inputs.seed}}
   --prompt_column ${{inputs.prompt_column}}
   --completion_column ${{inputs.completion_column}}
-  --aoai_endpoint ${{inputs.aoai_endpoint}}
-  --api_version ${{inputs.api_version}}
   --deployment ${{inputs.deployment}}
   --temperature ${{inputs.temperature}}
   --max_tokens ${{inputs.max_tokens}}
@@ -59,3 +55,9 @@ command: >-
   --test_output ${{outputs.test_output}}
     
 compute: azureml:cpu-cluster
+
+environment_variables:
+  OPENAI_API_TYPE: azure
+  OPENAI_API_KEY: ${{ openai.primary_key }}}
+  OPENAI_API_BASE: ${{ openai.api_endpoint }}}
+  OPENAI_API_VERSION: 2022-06-01-preview

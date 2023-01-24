@@ -6,4 +6,5 @@
 **/__pycache__/**
 openai_api_key
 conda.yml
+data/2feature/**
 .vscode/launch.json

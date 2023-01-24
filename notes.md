@@ -12,16 +12,17 @@ For classification, below are the different models and modes that were tried. As
 
 | Model   | Technique          |   Accuracy |   F1 Score | job                         |
 |:--------|:-------------------|-----------:|-----------:|:----------------------------|
-| ada     | fine-tune          |     0.5263 |     0.4855 | nan                         |
-| ada     | zero shot          |     0.1095 |     0.0482 | nan                         |
-| ada     | few shot           |     0.4231 |     0.4068 | patient_ship_3dg6gh430b_89  |
-| babbage | fine-tune          |     0.6147 |     0.6042 | nan                         |
-| curie   | zero shot          |     0.2751 |     0.251  | nan                         |
-| curie   | embedding + AutoML |     0.6241 |     0.6202 | nan                         |
-| curie   | fine-tune          |     0.5376 |     0.5041 | nan                         |
-| curie   | few shot           |     0.5799 |     0.5768 | jolly_rhythm_cnryl9j3f0_83  |
-| davinci | zero shot          |     0.4763 |     0.4785 | nan                         |
-| davinci | few shot           |     0.6992 |     0.6982 | placid_energy_hzkj1x77wl_85 |
+| ada     | fine-tune          |   0.5263   |   0.4855   | nan                         |
+| ada     | embedding + AutoML |   0.619535 |   0.612792 | musing_cart_wjzb12p2        |
+| ada     | zero shot          |   0.1095   |   0.0482   | nan                         |
+| ada     | few shot           |   0.4231   |   0.4068   | patient_ship_3dg6gh430b_89  |
+| babbage | fine-tune          |   0.6147   |   0.6042   | nan                         |
+| curie   | zero shot          |   0.2751   |   0.251    | nan                         |
+| curie   | embedding + AutoML |   0.6241   |   0.6202   | amiable_comb_0dbdzk5r2b     |
+| curie   | fine-tune          |   0.5376   |   0.5041   | nan                         |
+| curie   | few shot           |   0.5799   |   0.5768   | jolly_rhythm_cnryl9j3f0_83  |
+| davinci | zero shot          |   0.4763   |   0.481823 | careful_lime_ds0qyvgj4g_94  |
+| davinci | few shot           |   0.6992   |   0.6982   | placid_energy_hzkj1x77wl_85 |
 
 
 ### Hyperparameter tuning for fine-tuning is useful. 
@@ -112,15 +113,23 @@ Firstly, does matter quite a bit, which examples are sampled -- even with just o
 
 To illustrate, the folling example prompt yields an f1 score of `0.6982814` ([placid_energy_hzkj1x77wl_85](https://ml.azure.com/runs/placid_energy_hzkj1x77wl_85?wsid=/subscriptions/15ae9cb6-95c1-483d-a0e3-b1a1a3b06324/resourcegroups/ray/workspaces/ray)):
 
-    You are given a dataset of Yelp reviews, and your task is to classify them into one of five categories: 1 star, 2 stars, 3 stars, 4 stars, and 5 stars. You are provided with a small number of labeled examples to use as a reference, and you must use these to classify the rest of the reviews.
+    You are given a dataset of Yelp reviews, and your task is to classify them into one of five categories: 1 star, 2 stars, 
+    3 stars, 4 stars, and 5 stars. You are provided with a small number of labeled examples to use as a reference, and you 
+    must use these to classify the rest of the reviews.
 
     For example, you might be given the following labeled examples:
 
-    Review 1: "It seems like there is not as much value for your dollar at Gold Medal.  We had been there since the new school opened but decided to move on.  We got a 'can't we get you to stay' call which felt like desperation on their part.  My daughter enjoyed her lessons but her favorite teacher left (as most do) and the cost was not worth it anymore.  I would not recommend them to my friends." (label: 2 stars)
+    Review 1: "It seems like there is not as much value for your dollar at Gold Medal.  We had been there since the new school 
+    opened but decided to move on.  We got a 'can't we get you to stay' call which felt like desperation on their part.  My 
+    daughter enjoyed her lessons but her favorite teacher left (as most do) and the cost was not worth it anymore.  I would not 
+    recommend them to my friends." (label: 2 stars)
 
-    Review 2: "We started each morning of our vacation at The Breakfast Club.  Everything was so tasty; juices are fresh-squeezed.  Menu has quite a variety and portions are very filling  It gets busy early.  Be sure to give it a try." (label: 5 stars)
+    Review 2: "We started each morning of our vacation at The Breakfast Club.  Everything was so tasty; juices are fresh-squeezed.  
+    Menu has quite a variety and portions are very filling  It gets busy early.  Be sure to give it a try." (label: 5 stars)
 
-    Review 3: "The main reason to miss a star is that the one that we ordered (the mint-lamb) was a bit dry to my taste and no mint to taste at all. For desert we had the apple one and that was much better. I'd like to try a different one some other time and compare :).\n\nGood environment, and for groups, friendly staff who would explain you what they are cooking!!" (label: 3 stars)
+    Review 3: "The main reason to miss a star is that the one that we ordered (the mint-lamb) was a bit dry to my taste and no mint 
+    to taste at all. For desert we had the apple one and that was much better. I'd like to try a different one some other time and 
+    compare :).\n\nGood environment, and for groups, friendly staff who would explain you what they are cooking!!" (label: 3 stars)
 
     Based on these examples, you should be able to classify the following review:
 
@@ -130,19 +139,35 @@ To illustrate, the folling example prompt yields an f1 score of `0.6982814` ([pl
 
 And for contrast, this prompt yields an f1 score of `0.6151146` ([placid_energy_hzkj1x77wl_16](https://ml.azure.com/runs/placid_energy_hzkj1x77wl_16?wsid=/subscriptions/15ae9cb6-95c1-483d-a0e3-b1a1a3b06324/resourcegroups/ray/workspaces/ray)):
 
-    You are given a dataset of Yelp reviews, and your task is to classify them into one of five categories: 1 star, 2 stars, 3 stars, 4 stars, and 5 stars. You are provided with a small number of labeled examples to use as a reference, and you must use these to classify the rest of the reviews.
+    You are given a dataset of Yelp reviews, and your task is to classify them into one of five categories: 1 star, 2 stars, 
+    3 stars, 4 stars, and 5 stars. You are provided with a small number of labeled examples to use as a reference, and you 
+    must use these to classify the rest of the reviews.
 
     For example, you might be given the following labeled examples:
 
-    Review 1: "Good coffee and they always take care of what i need in a timely manner. Never mind the fact it is literally 20 yards from my front door, but that may play into my liking of the establishment.  Either way you should check it out and enjoy some free Wifi." (label: 4 stars)
+    Review 1: "Good coffee and they always take care of what i need in a timely manner. Never mind the fact it is literally 
+    20 yards from my front door, but that may play into my liking of the establishment.  Either way you should check it out 
+    and enjoy some free Wifi." (label: 4 stars)
 
     Review 2: "Loved the winkie!  Eat your vegan meal next door at Green and stroll over to Nami for dessert." (label: 5 stars)
 
-    Review 3: "I stopped in here at 6:45am one morning and was told I was a bit early.  I'm used to coffee shops opening earlier I guess, but they were nice about it and invited me in to sit and wait. \n\nI liked their stacks of Latin American Vogue, and the artwork on the walls was nice.  They also had ice water out for you to serve yourself. \n\nI ordered my usual americano, and was pleased.  They have raw sugar you can serve yourself by the heaping spoonful out of a pretty candy dish.  That was lovely.\n\nAlso, they are now the only place to carry Sweet Peas Bakery items.  My favorite thing to do was walk down to Danielle's shop downtown and pick up some coffee at Royal and some of her Rosemary Shortbread cookies.  It doesn't sound yummy, but believe me they are!  Be sure to ask for some. \n\nAt the time I went, the place was obviously not crowded and I received attentive service..." (label: 3 stars)
+    Review 3: "I stopped in here at 6:45am one morning and was told I was a bit early.  I'm used to coffee shops opening 
+    earlier I guess, but they were nice about it and invited me in to sit and wait. \n\nI liked their stacks of Latin American 
+    Vogue, and the artwork on the walls was nice.  They also had ice water out for you to serve yourself. \n\nI ordered my 
+    usual americano, and was pleased.  They have raw sugar you can serve yourself by the heaping spoonful out of a pretty 
+    candy dish.  That was lovely.\n\nAlso, they are now the only place to carry Sweet Peas Bakery items.  My favorite 
+    thing to do was walk down to Danielle's shop downtown and pick up some coffee at Royal and some of her Rosemary Shortbread 
+    cookies.  It doesn't sound yummy, but believe me they are!  Be sure to ask for some. \n\nAt the time I went, the place was 
+    obviously not crowded and I received attentive service..." (label: 3 stars)
 
-    Review 4: "We went to American Junkie after we found a 50% discount from http://www.restaurant.com. They couldn't pay us to go back.\n\nIf you like velvet ropes, not being able to talk to the person next to you because the music is so loud, and being around people who are really into themselves, American Junkie is your spot." (label: 1 star)
+    Review 4: "We went to American Junkie after we found a 50% discount from http://www.restaurant.com. They couldn't pay us 
+    to go back.\n\nIf you like velvet ropes, not being able to talk to the person next to you because the music is so loud, 
+    and being around people who are really into themselves, American Junkie is your spot." (label: 1 star)
 
-    Review 5: "I got the banana nutella cupcake and love the banana bread-like cupcake. However, the frosting is way too sweet and overpowers the banana flavor of the cupcake. As many reviewers have already mentioned, the cupcake is also over-priced at $3.75 each for the size and the lack of creativity. \nWith so many desert/snack places in Scottsdale, I am unlikely to come back here." (label: 2 stars)
+    Review 5: "I got the banana nutella cupcake and love the banana bread-like cupcake. However, the frosting is way too 
+    sweet and overpowers the banana flavor of the cupcake. As many reviewers have already mentioned, the cupcake is also 
+    over-priced at $3.75 each for the size and the lack of creativity. \nWith so many desert/snack places in Scottsdale, 
+    I am unlikely to come back here." (label: 2 stars)
 
     Based on these examples, you should be able to classify the following review:
 

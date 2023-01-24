@@ -49,16 +49,16 @@ def save_data(embedding, target, output_path):
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--raw_data", default="./data/1raw/yelp_mini.csv")
-    parser.add_argument("--train_output", default="./data/2feature/train.npz")
-    parser.add_argument("--validation_output", default="./data/2feature/validation.npz")
+    parser.add_argument("--raw_data", default="./data/1raw/yelp.csv")
+    parser.add_argument("--train_output", default="./data/2feature/train_ada.npz")
+    parser.add_argument("--validation_output", default="./data/2feature/validation_ada.npz")
     parser.add_argument("--prompt_column", default="text")
     parser.add_argument("--completion_column", default="stars")
     parser.add_argument("--train_test_split", default=0.8, type=float)
     parser.add_argument("--seed", default=42, type=int)
     parser.add_argument("--aoai_endpoint", default="https://aoai.openai.azure.com/")
     parser.add_argument("--api_version", default="2022-06-01-preview")
-    parser.add_argument("--embedding_deployment", default="text-similarity-curie-001")
+    parser.add_argument("--embedding_deployment", default="text-similarity-ada-001")
     args = parser.parse_args()
 
     mlflow.log_params({
@@ -92,8 +92,8 @@ if __name__ == "__main__":
     train, validation = split_dataframe(df, args.train_test_split)
 
     # save the train and test data
-    save_data(np.vstack(df.embedding), train[args.completion_column], args.train_output)
-    save_data(np.vstack(df.embedding), validation[args.completion_column], args.validation_output)
+    save_data(np.vstack(train.embedding), train[args.completion_column], args.train_output)
+    save_data(np.vstack(validation.embedding), validation[args.completion_column], args.validation_output)
 
 
 

@@ -29,8 +29,8 @@ def classify_yelp_batch(llm,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data", default="./data/1raw/yelp_mini.csv")
-    parser.add_argument("--prompts", default="./data/1prompts/few_shot_prompts.csv")
+    parser.add_argument("--data", default="./data/1raw/yelp_10.csv")
+    parser.add_argument("--prompts", default="./data/1prompts/prompts.csv")
     parser.add_argument("--prompt_number", default=1, type=int)
     parser.add_argument("--test_output", default="./data/1zero_shot/metrics.yaml")
     parser.add_argument("--prompt_column", default="text")
@@ -88,7 +88,7 @@ if __name__ == "__main__":
                                   prompt=prompt)
 
     df['prediction'] = results
-    print(df[['prediction','stars']])
+    #print(df[['prediction','stars']])
     metrics = calculate_metrics(df[args.completion_column].values, results)
 
     bins = range(0, 7)
