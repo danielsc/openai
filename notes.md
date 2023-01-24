@@ -1,12 +1,10 @@
-## Findings
+# Improving the performance of an LLM task
 
-### The Task
+## The Task
 
 The task is text classification of Yelp reviews -- the review text is given and it has to categorized into a 5 star rating. The dataset is a 10000 review subset of the full Yelp dataset with all features but `text` and `stars` removed. The dataset was downloaded from [Kaggle](https://www.kaggle.com/code/omkarsabnis/sentiment-analysis-on-the-yelp-reviews-dataset/data) and can be seen [here](data/1raw/yelp.csv)
 
-### Fine-tuning is useful.
-
-For classification, below are the different models and modes that were tried. As can be seen, **zero shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely tops out on babbage with curie performing worse. **Embedding + AutoML**, however, works very well on curie. **few shot** is doing amazingly well on davinci reaching a level that is close to the state of the art for the task ([see here](https://paperswithcode.com/sota/text-classification-on-yelp-5)).
+For classification, below are the different models and modes that were tried. As can be seen, **zero shot** only starts to perform well with davinci. **Fine-tuning** works well on the lower end models, but strangely tops out on babbage with curie performing worse. **Embedding + AutoML**, however, works very well on curie and also on ada. **few shot** is doing amazingly well on davinci reaching a level that is close to the state of the art for the task ([see here](https://paperswithcode.com/sota/text-classification-on-yelp-5)).
 
 ![](images/yelp_test_f1.png)
 
@@ -18,63 +16,14 @@ For classification, below are the different models and modes that were tried. As
 | ada     | few shot           |   0.4231   |   0.4068   | patient_ship_3dg6gh430b_89  |
 | babbage | fine-tune          |   0.6147   |   0.6042   | nan                         |
 | curie   | zero shot          |   0.2751   |   0.251    | nan                         |
-| curie   | embedding + AutoML |   0.6241   |   0.6202   | amiable_comb_0dbdzk5r2b     |
+| curie   | embedding + AutoML |   0.628976 |   0.624561 | stoic_screw_jw6bywsn        |
 | curie   | fine-tune          |   0.5376   |   0.5041   | nan                         |
 | curie   | few shot           |   0.5799   |   0.5768   | jolly_rhythm_cnryl9j3f0_83  |
 | davinci | zero shot          |   0.4763   |   0.481823 | careful_lime_ds0qyvgj4g_94  |
 | davinci | few shot           |   0.6992   |   0.6982   | placid_energy_hzkj1x77wl_85 |
 
 
-### Hyperparameter tuning for fine-tuning is useful. 
-- There is no obvious way to get to the best hyperparameter values for fine-tuning without a decent number of runs. The best model so far was a `babbage` model with a batch size of `4`, a learning rate multiplier of `0.17`, and it was trained for `10` epochs. The next best model was an `ada` model with batch size of `8`, a learning rate multipler of `0.11`, and it was trained for `15` epochs. After 83 runs for the given problem, data and prompt crafting, it seems that a `babbage` model with a small batch size (`4`), `20` epochs and a learning rate multiplier of around `0.15` might be a good choice. 
-![](images/all_scatterplots.png)
-
-
-- Outof 100 runs, the best model was 16 percentage points better than the median and mean models, which one might hope to arrive at through a handful of manually crafted runs.
-
-![](images/f1_score.png)
-
-| stat | value |
-| --- | --- |
-| count |   83.000000 |
-| mean    |  0.403587 |
-| min     | 0.249653|
-| 50%    |   0.404316|
-| max      | 0.566951|
-
-
-
-## Issues:
-
-- AOAI: Having only accuracy and f1_score as metrics to evaluate is quite limiting. In the case of a Yelp 1-5 rating, it seems that RMSE might be a better metric to optimize for. Not sure if modeling this as a regression task would be feasible or advised with OpenAI. 
-
-- AzureML: To enable early stopping, we need to allow the job to react to cancellation by hyperdrive, such that the fine_tune operation on the AOAI side get's cancelled, too (https://msdata.visualstudio.com/Vienna/_workitems/edit/1351560)
-
-- AzureML: cannot see other than primary metric in the table of trials
-
-- AOAI: Where is the reference documentation for the AOAI Python SDK? 
-
-- AOAI: Where is the documenation for the Azure-specific extensions to the AOAI service, for instance hyperparameters to control **LORA**?
-
-### Difference in performance between classification metrics reported and measured
-
-Strangely, I am seeing quite a difference between the classification metrics reported by the AOAI fine-tuning (`classification/accuracy` and `classification/f1_score_weighted`) and the same metrics measured by deplying the fine-tuned model and then running the same test set through it.
-
-Here is the graph of the difference between the two metrics for the different models. You would expect the dots to be close to the identity line, instead they are consistently below it.
-
-![](images/fine_tune_vs_deployed_model_metric.png)
-
-Here a boxplot that better shows the size of the differences. On average, the difference is around 5 percentage points, which is quite significant.
-
-![](images/diff_accuracy_f1.png)
-
-Looking at which accuracies are affected the most, (maybe expectedly) there is a slight increase in difference as the accuracy increases:
-
-![](images/diff_accuracy_f1_vs_fine_tune_accuracy_f1.png)
-
-After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Most other datasets sampled from the full yelp-5 dataset, however, show a significatn deviation as shown above. So, it seems that the fine-tuning is overfitting on the validation dataset (or that the valdiation set is not sufficiently representative of the overall dataset). It is only 532 records (which is 5% of the dataset) -- a larger validation dataset should likely fix the issue. 
-
-### Zero-shot prompt crafting
+## Zero-shot prompt crafting
 
 As is shown at the top, zero-shot prompts don't yield a good result for the lower end models. However, for davinci a decent score (`f1 = 0.48`) can be achieved. But it needs to be noted that small changes to the prompt can make a big difference. See below table for examples:
 
@@ -100,7 +49,7 @@ For this classification problem, tuning the hyperparameters improves the results
 ![](images/zero_shot_temperature_vs_f1.png)
 
 
-### Few-shot prompt crafting
+## Few-shot prompt crafting
 
 Through few-shot prompt crafting it is possible to improve the quality significantly over zero shot and the overall best results (so fare) are achieved with a Davinci model. It does matter which examples are being used -- interestingly more than the number. 
 
@@ -187,6 +136,67 @@ The second finding from the above graph is that the the number of examples used 
 |  7 |               |     |    | 1           | 0.0243348  |
 |  9 |  |   |    |    | 1          |
 
+
+
+## Fine-Tuning
+- There is no obvious way to get to the best hyperparameter values for fine-tuning without a decent number of runs. The best model so far was a `babbage` model with a batch size of `4`, a learning rate multiplier of `0.17`, and it was trained for `10` epochs. The next best model was an `ada` model with batch size of `8`, a learning rate multipler of `0.11`, and it was trained for `15` epochs. After 83 runs for the given problem, data and prompt crafting, it seems that a `babbage` model with a small batch size (`4`), `20` epochs and a learning rate multiplier of around `0.15` might be a good choice. 
+![](images/all_scatterplots.png)
+
+
+- Outof 100 runs, the best model was 16 percentage points better than the median and mean models, which one might hope to arrive at through a handful of manually crafted runs.
+
+![](images/f1_score.png)
+
+| stat | value |
+| --- | --- |
+| count |   83.000000 |
+| mean    |  0.403587 |
+| min     | 0.249653|
+| 50%    |   0.404316|
+| max      | 0.566951|
+
+### Difference in performance between classification metrics reported and measured
+
+Strangely, I am seeing quite a difference between the classification metrics reported by the AOAI fine-tuning (`classification/accuracy` and `classification/f1_score_weighted`) and the same metrics measured by deplying the fine-tuned model and then running the same test set through it.
+
+Here is the graph of the difference between the two metrics for the different models. You would expect the dots to be close to the identity line, instead they are consistently below it.
+
+![](images/fine_tune_vs_deployed_model_metric.png)
+
+Here a boxplot that better shows the size of the differences. On average, the difference is around 5 percentage points, which is quite significant.
+
+![](images/diff_accuracy_f1.png)
+
+Looking at which accuracies are affected the most, (maybe expectedly) there is a slight increase in difference as the accuracy increases:
+
+![](images/diff_accuracy_f1_vs_fine_tune_accuracy_f1.png)
+
+After some investigation, I am able to reproduce the same numbers that are reported by the fine-tuning if the validation dataset from the fine-tuning is used. Most other datasets sampled from the full yelp-5 dataset, however, show a significatn deviation as shown above. So, it seems that the fine-tuning is overfitting on the validation dataset (or that the valdiation set is not sufficiently representative of the overall dataset). It is only 532 records (which is 5% of the dataset) -- a larger validation dataset should likely fix the issue. 
+
+## Embedding
+
+Using LLMs to extract an embedding is a very simple way to arrive at surprisingly good results even with the lowest end model (ada). The whole dataset is being passed through the model and the resulting embedding is being used to train a simple classifier model. I used AutoML to do the optimization of the classifier model for me.
+
+Ada provides a 1024 dimensional embedding while davinci provides a 2048 dimensional embedding. The following table shows the results of the classification task using the embeddings as features:
+
+| Model   |  size |   best model Accuracy |  best model F1 Score | Classifier | job |
+|:--------|-----:|-----------:|-----------:|:----------------------------|----|
+| ada     | 1024 |   0.619535 |   0.612792 | TruncatedSVDWrapper, LogisticRegression | musing_cart_wjzb12p2        |
+| curie   | 2048 |   0.628976 |   0.624561 | SparseNormalizer, LightGBM | stoic_screw_jw6bywsn        |
+
+Currently we don't offer embeddings for davinci or babbage on the AOAI service.
+
+### Issues:
+
+- AOAI: Having only accuracy and f1_score as metrics to evaluate is quite limiting. In the case of a Yelp 1-5 rating, it seems that RMSE might be a better metric to optimize for. Not sure if modeling this as a regression task would be feasible or advised with OpenAI. 
+
+- AzureML: To enable early stopping, we need to allow the job to react to cancellation by hyperdrive, such that the fine_tune operation on the AOAI side get's cancelled, too (https://msdata.visualstudio.com/Vienna/_workitems/edit/1351560)
+
+- AzureML: cannot see other than primary metric in the table of trials
+
+- AOAI: Where is the reference documentation for the AOAI Python SDK? 
+
+- AOAI: Where is the documenation for the Azure-specific extensions to the AOAI service, for instance hyperparameters to control **LORA**?
 
 ## Jobs To Be Done
 
