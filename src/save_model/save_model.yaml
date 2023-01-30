@@ -18,11 +18,14 @@ inputs:
 outputs:
   model:
     type: mlflow_model
+  metrics:
+    type: uri_file
     
 command: >-
   python save_model.py
   --deployment ${{inputs.deployment}}
   --model ${{outputs.model}}
   --test_data ${{inputs.test_data}}
+  --metrics ${{outputs.metrics}}
     
 compute: azureml:cpu-cluster

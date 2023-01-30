@@ -200,7 +200,7 @@ Ada provides a 1024 dimensional embedding while davinci provides a 2048 dimensio
 | Model   |  size |   best model Accuracy |  best model F1 Score | Classifier | job |
 |:--------|-----:|-----------:|-----------:|:----------------------------|----|
 | ada     | 1024 |   0.619535 |   0.612792 | TruncatedSVDWrapper, LogisticRegression | musing_cart_wjzb12p2        |
-| curie   | 2048 |   0.628976 |   0.624561 | SparseNormalizer, LightGBM | stoic_screw_jw6bywsn        |
+| curie   | 4096 |   0.628976 |   0.624561 | SparseNormalizer, LightGBM | stoic_screw_jw6bywsn        |
 
 Currently we don't offer embeddings for davinci or babbage on the AOAI service.
 

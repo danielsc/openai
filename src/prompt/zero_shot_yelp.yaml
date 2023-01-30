@@ -12,7 +12,7 @@ inputs:
     path: ../../data/1raw/yelp_test.csv
   prompts:
     type: uri_file
-    path: ../../data/1prompts/few_shot_prompts.csv
+    path: ../../data/1prompts/prompts.csv
   prompt_number: 1
   prompt_column: text
   completion_column: stars
@@ -51,3 +51,6 @@ command: >-
   --presence_penalty ${{inputs.presence_penalty}}
     
 compute: azureml:cpu-cluster
+
+identity:
+  type: user_identity
