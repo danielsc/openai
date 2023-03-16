@@ -1,12 +1,1 @@
-name: openai
-channels:
-  - defaults
-  - conda-forge
-dependencies:
-  - python=3.8
-  - pip
-  - pip:
-    - mlflow<2.0.0
-    - openai
-    - azureml-mlflow
-    - azureml-core
+../save_model/conda.yaml

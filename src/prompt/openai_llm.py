@@ -19,6 +19,17 @@ def load_api_key(keyname = "openai-key"):
 
   return secret_value
 
+# def load_api_key(keyname = "OPENAI-API-KEY"):
+
+#   from azure.identity import DefaultAzureCredential
+#   import openai
+
+#   # Request credential
+#   default_credential = DefaultAzureCredential()
+#   token = default_credential.get_token("https://cognitiveservices.azure.com/.default")
+#   return token.token
+
+
 @dataclass
 class AzureOpenAI(mlflow.pyfunc.PythonModel):
   deployment :str
@@ -53,6 +64,7 @@ class AzureOpenAI(mlflow.pyfunc.PythonModel):
   def call_oai_endpoint(self, model_input: np.array, debug=False):
     headers={
       "api-key": self.api_key,
+      #"Authorization": f"Bearer {self.api_key}",
       "Content-Type": "application/json"
     }
     payload = {
