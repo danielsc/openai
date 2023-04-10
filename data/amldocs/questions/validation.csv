@@ -1,0 +1,84 @@
+question
+How to update an existing azureml environment using AzureML SDK V2?
+Generate a Python Code Sample to create an environment from conda specification using AzureML SDK V2?
+How to use Tensorboard to see job output using AzureML SDK V2?
+How do I deploy a model in AzureML using CLI V2 and Managed Inferencing ?
+Code Sample to create a datastore and use it in sweep Job using AzureML SDK V2?
+generate a python code samples to debug a failed job using Vscode and AZureML SDK V2?
+Code Samples to create an MLTable and use it in a sweep job  using AzureML SDK V2?
+How can I see progress of an online endpoint deploying in AzureML using CLI V2 ?
+How can I setup an online endpoint in AzureML inside my virtual network using CLI V2 ?
+Code Samples to create an MLTable and use it in a Pipeline Job using AzureML SDK V2?
+How can I create an online endpoint from an MLFlow model using AzureML CLI V2?
+How can I create a compute instance with auto-shutdown on it using CLI V2 ?
+can you give me a sample code I can use to test my online endpoint deployment in AzureML ?
+How can I create a sweep job using AzureML SDK V2 ?
+What are the supported VM SKU List of AzureML ManagedOnlineEndpoint ?
+Generate a python code sample to enable debugging of a ManagedOnlineEndpoint duing deployments using AzureML SDK V2?
+How can i troubleshoot a azureml managed endpoint failures ?
+How can I  to create a GPU based compute instance using AzureML SDK V2
+How to use ur_file data type inside a command Job in AzureML SDK V2?
+Generate a python code samples to deploy a custom container using ManagedOnlineEndpoint and AzureML SDK V2?
+Generate Python code samples to deploy a high performing serving ManagedOnlineEndpoint using Triton and AzureML SDK V2?
+How to use uri_folder data type inside a command Job in AzureML SDK V2?
+How can I run a command job that uses train.py as entry script in AzureML SDK V2 ?
+Generate a python code sample to show how to Autoscale of ManagedOnlineEndpoint using AzureML SDK V2?
+Code Samples to create a GPU cluster type AmlCompute using AzureML SDK V2?
+How to connect to An existing AzureML workspace greg_ws_1 using AzureML SDK V2?
+Generate a Python code samples to deploy a managedonlineendpoint using AzureML rest API?
+Generate Python Code Samples to create two model deployments using a registered model and existing ManagedOnlineEndpoint assigning 50% traffic to each deploying using AzureML SDK V2?
+How to register an MLFlow model which is stored in Blob datastore using AzureML SDK V2?
+How to debug a failed Job using SSH and AzureML SDK V2?
+Generate Python Code Samples to create a safe model deployment using ManagedOnlineEndpoint using AzureML SDK V2?
+How to train an MLflow model using Command Job and AzureML SDK V2?
+Python Code Samples to create a ManagedOnlineEndpoint with a registered model using AzureML SDK V2?
+How to register an Azure Data Lake (gen2) storage datastore and upload CSV data using AzureML SDK V2?
+How to register a blob storage datastore and upload CSV data using AzureML SDK V2?
+Code Samples to create a local endpoint using AzureML SDK V2 and ManagedOnlineEndpoint ?
+Code Samples to create a GPU compute type ComputeInstance using AzureML SDK V2?
+Generate Python Code Samples to create environments from an existing base container in MCR using AzureML SDK V2?
+Generate a Python code to show How to setup Environments from docker file using AzureML SDK V2?
+Generate a Python Code samples that shows how to train a demand forcast using Azuomated and AzureML SDK V2?
+Generate a python code to get ManagedOnlineEndpoint deployment logs using AzureML SDK V2?
+What are the most common errors that one encounter while using ManagedOnlineEndpoint along with AzureML SDK V2?
+"Generate python Code samples that shows how to create a three node pipeline that has data preparation, training a model and deploying a model to an online endpoint using AzureML SDK V2?"
+How to enable public access to a private link workspace using AzureML SDK V2?
+Generate a Python code sample to register a private Container registry to a workspace using AzureML SDK V2?
+Generate a python code to create a workspace with Customer Managed Keys using AzureML SDK V2 ?
+How to Archive an existing environment using AzureML SDK V2?
+How to assign managed identity to an a workspace in AzureML ?
+How to enable create an object detection model using Azuomated ML in AzureML SDK V2 ?
+Generate a Python code to show how to run an NLP job using Azuomated ML in AzureML SDK V2 ?
+Generate Python Code Samples to create an environment using docker build context using AzureML SDK V2?
+How can I find out who submitted a job using the v2 CLI?
+can you give me a concrete yaml file for a pipeline that would upload the data at job submission?
+I asked you how to do it in the v2 cli -- can you show me?
+how can I upload data to the cloud for use in a pipeline with the CLI v2?
+how do I shut down a compute instance using the v2 cli?
+How can I get a Containerized Jupyter Notebook to run as code in a pipeline using the v2 CLI?
+how can I upload a csv file to my compute instance?
+please provide a sample job yaml
+how can I view all my scheduled jobs using the new CLI v2?
+how can I cancel a job using the new v2 cli?
+how can I see which jobs are running on a compute cluster?
+what are the constraints on naming a workspace in azureml
+how many metrics names can I use in a run?
+How can I start an AutoML job from the v2 CLI?
+how do I deploy an MLFLow model using the v2 cli?
+how can I view the logs of a deployment using the v2 cli?
+How can I tune the hyperparameters of a training job?
+please provide an example of a sweep job yaml to be used with the v2 CLI
+how can I schedule a job to run every day at 9am using the new CLI v2?
+how can I see the quota assigned to my workspace in the v2 cli?
+How can I tune the hyperparameters of a training job using the v2 CLI?
+How can I use components with pipelines using the new CLI v2? Please provide a concrete example.
+can you give me an example of a yaml file to train a model with the CLI v2?
+how can I run a job under the user's identity using CLI v2? Please provide a concrete example of a yaml file.
+how can I use my csv file in a job using the v2 cli?
+how can I register a model from a job using the v2 cli?
+I'm trying to access the files/artifacts located in the code tab under an AzureML job. How can I download the code of a job with the v2 CLI?
+how can I cancel a run using the new v2 cli?
+can you give me an example of a CLI v2 command to register a model?
+how can I create a datastore using the new CLI v2?
+How can I get a list of running compute instances and how long they have been running with the v2 CLI?
+how can I create a GPU compute cluster using the new CLI v2?

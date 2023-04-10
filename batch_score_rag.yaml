@@ -1,0 +1,27 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+code: src/langchain/
+
+inputs:
+  questions:
+    type: uri_file
+    path: ./data/amldocs/questions/validation.csv
+  top: 3
+  chain_type: stuff
+
+outputs:
+  scores:
+    type: uri_file
+
+command: >-
+  python batch_score_rag.py
+  --questions ${{inputs.questions}}
+  --top ${{inputs.top}}
+  --chain_type ${{inputs.chain_type}}
+  --scores ${{outputs.scores}}
+
+compute: azureml:cpu-cluster
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: conda.yml

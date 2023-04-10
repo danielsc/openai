@@ -5,6 +5,8 @@ openai.api_version = "2022-12-01"
 openai.api_base = os.environ["OPENAI_API_BASE"]
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
+cog_search_patched = False
+
 # set up cog search retriever
 from langchain.docstore.document import Document
 from langchain.schema import BaseRetriever, Document
@@ -61,13 +63,17 @@ from langchain.chat_models import AzureChatOpenAI
 from patch import patch_langchain, log_function_call
 
 def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str = None, verbose: bool = False): 
+    global cog_search_patched
 
     if verbose:
         # patch langchain to log function calls
         patch_langchain()
-        CognitiveSearchRetriever.get_relevant_documents = log_function_call(CognitiveSearchRetriever.get_relevant_documents)
+        if not cog_search_patched:
+            cog_search_patched = True
+            CognitiveSearchRetriever.get_relevant_documents = log_function_call(CognitiveSearchRetriever.get_relevant_documents)
+        
 
-    search_endpoint = "https://gptkb-73g2mkes5kahm.search.windows.net/"
+    search_endpoint = os.environ["COG_SEARCH_ENDPOINT"]
     index_name = "amldocs"
     searchkey = os.environ["COG_SEARCH_KEY"]
     retriever = CognitiveSearchRetriever(search_endpoint, index_name, searchkey, top=top, verbose=verbose)

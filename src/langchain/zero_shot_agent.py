@@ -8,15 +8,17 @@ from langchain import LLMMathChain
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.schema import HumanMessage
 import openai, os
+from patch import log_function_call, patch_langchain
+
+patch_langchain()
 
 openai.api_type = "azure"
 openai.api_version = "2022-12-01"
-openai.api_base = 
+openai.api_base = os.environ["OPENAI_API_BASE"]
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
 # llm = AzureOpenAI(deployment_name="text-davinci-003")
 llm = AzureOpenAI(deployment_name="text-davinci-003", model_name="text-davinci-003", temperature=0)
-print(llm("What is the capital of Italy?"))
 
 # llm = AzureChatOpenAI(
 #     deployment_name="gpt-4",

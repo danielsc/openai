@@ -1,0 +1,11 @@
+question
+can you give me an example of a yaml file to train a model with the CLI v2?
+how can I run a job under the user's identity using CLI v2? Please provide a concrete example of a yaml file.
+how can I use my csv file in a job using the v2 cli?
+how can I register a model from a job using the v2 cli?
+I'm trying to access the files/artifacts located in the code tab under an AzureML job. How can I download the code of a job with the v2 CLI?
+how can I cancel a run using the new v2 cli?
+can you give me an example of a CLI v2 command to register a model?
+how can I create a datastore using the new CLI v2?
+How can I get a list of running compute instances and how long they have been running with the v2 CLI?
+how can I create a GPU compute cluster using the new CLI v2?
