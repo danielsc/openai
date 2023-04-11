@@ -21,12 +21,13 @@ from patch import log_json_artifact
 
 
 class CognitiveSearchRetriever(BaseRetriever):
-    def __init__(self, endpoint: str, index_name: str, searchkey: str, top: int = 3, verbose: bool = False):
+    def __init__(self, endpoint: str, index_name: str, searchkey: str, top: int = 3, context_artifact_name: str = "cog_search_docs.json", verbose: bool = False):
         self.endpoint = endpoint
         self.index_name = index_name
         self.searchkey = searchkey
         self.top = top
         self.verbose = verbose
+        self.context_artifact_name = context_artifact_name
         self.client = SearchClient(endpoint=endpoint, index_name=index_name, credential=AzureKeyCredential(searchkey))
     
     def dict(self):
@@ -36,6 +37,7 @@ class CognitiveSearchRetriever(BaseRetriever):
             "searchkey": "********",
             "top": self.top,
             "verbose": self.verbose,
+            "context_artifact_name": self.context_artifact_name,
         }   
 
     def get_relevant_documents(self, query: str) -> List[Document]:
@@ -51,7 +53,7 @@ class CognitiveSearchRetriever(BaseRetriever):
             docs_json = [{ 'page_content': doc.page_content, 'metadata': doc.metadata  } for doc in docs]
 
             # Write the dictionary to a temporary file
-            log_json_artifact(docs_json, "cog_search_docs.json")
+            log_json_artifact(docs_json, self.context_artifact_name)
 
         return docs
 
@@ -62,7 +64,8 @@ from langchain.chains import RetrievalQA
 from langchain.chat_models import AzureChatOpenAI
 from patch import patch_langchain, log_function_call
 
-def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str = None, verbose: bool = False): 
+def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str = None, 
+        context_artifact_name: str = "cog_search_docs.json", verbose: bool = False): 
     global cog_search_patched
 
     if verbose:
@@ -76,7 +79,8 @@ def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str
     search_endpoint = os.environ["COG_SEARCH_ENDPOINT"]
     index_name = "amldocs"
     searchkey = os.environ["COG_SEARCH_KEY"]
-    retriever = CognitiveSearchRetriever(search_endpoint, index_name, searchkey, top=top, verbose=verbose)
+    retriever = CognitiveSearchRetriever(search_endpoint, index_name, searchkey, top=top, 
+                                         context_artifact_name=context_artifact_name, verbose=verbose)
 
     llm = AzureChatOpenAI(
         deployment_name="gpt-35-turbo",

@@ -3,12 +3,15 @@ import openai, os
 import pandas as pd
 from rag_with_cog_search import rag
 from patch import log_json_artifact
-import mlflow, json
+import mlflow, json, tempfile
 
 openai.api_type = "azure"
 openai.api_version = "2022-12-01"
 openai.api_base = os.environ["OPENAI_API_BASE"]
 openai.api_key = os.environ["OPENAI_API_KEY"]
+
+from mlflow.tracking import MlflowClient
+mlflow_client = MlflowClient()
 
 if __name__ == "__main__":
     import argparse
@@ -34,6 +37,7 @@ if __name__ == "__main__":
     df = pd.read_csv(args.questions)
     questions = df["question"].tolist()
     scores = []
+    context_artifact_name = "cog_search_docs.json"
 
     for i, question in enumerate(questions):
         # Start a child run
@@ -44,10 +48,20 @@ if __name__ == "__main__":
             mlflow.log_param("chain_type", args.chain_type)
             mlflow.log_param("meta_prompt", args.meta_prompt)
 
-            result = rag(question, top=args.top, chain_type=args.chain_type, meta_prompt=args.meta_prompt, verbose=verbose)
+            result = rag(question, top=args.top, chain_type=args.chain_type, 
+                         context_artifact_name=context_artifact_name,
+                         meta_prompt=args.meta_prompt, verbose=verbose)
 
+            # load the cog_search context back from MLFlow 
             if verbose:
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    artifact_local_path = mlflow.artifacts.download_artifacts(f"runs:/{child_run.info.run_id}/{context_artifact_name}", dst_path=temp_dir)
+                    with open(artifact_local_path, 'r') as f:
+                        result["context"] = json.load(f)
+
                 log_json_artifact(result, "result.json")
+            
+            
             
             print("Q:", result["query"])
             print("A:", result["result"])
