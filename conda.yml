@@ -15,3 +15,4 @@ dependencies:
     - evaluate
     - langchain
     - matplotlib
+    - azure-search-documents
