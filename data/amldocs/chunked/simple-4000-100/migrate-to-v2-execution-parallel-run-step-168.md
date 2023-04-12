@@ -1,0 +1,20 @@
+|ParallelRunConfig.error_threshold| parallel_run_function.error_threshold |The number of failed mini batches that could be ignored in this parallel job. If the count of failed mini-batch is higher than this threshold, the parallel job will be marked as failed.<br><br>"-1" is the default number, which means to ignore all failed mini-batch during parallel job.|
+|ParallelRunConfig.output_action|parallel_run_function.append_row_to |Aggregate all returns from each run of mini-batch and output it into this file. May reference to one of the outputs of parallel job by using the expression ${{outputs.<output_name>}}|
+|ParallelRunConfig.node_count|parallel_run_function.instance_count |Optional number of instances or nodes used by the compute target. Defaults to 1.|
+|ParallelRunConfig.process_count_per_node|parallel_run_function.max_concurrency_per_instance |The max parallelism that each compute instance has. |
+|ParallelRunConfig.mini_batch_size|parallel_run_function.mini_batch_size |Define the size of each mini-batch to split the input.<br><br>If the input_data is a folder or set of files, this number defines the file count for each mini-batch. For example, 10, 100.<br><br>If the input_data is tabular data from `mltable`, this number defines the proximate physical size for each mini-batch. The default unit is Byte and the value could accept string like 100 kb, 100 mb.|
+|ParallelRunConfig.source_directory|parallel_run_function.task.code |A local or remote path pointing at source code.|
+|ParallelRunConfig.description|parallel_run_function.description |A friendly description of the parallel|
+|ParallelRunConfig.logging_level|parallel_run_function.logging_level |A string of the logging level name, which is defined in 'logging'. Possible values are 'WARNING', 'INFO', and 'DEBUG'. (optional, default value is 'INFO'.) This value could be set through PipelineParameter. |
+|ParallelRunConfig.run_invocation_timeout|parallel_run_function.retry_settings.timeout |The timeout in seconds for executing custom run() function. If the execution time is higher than this threshold, the mini-batch will be aborted, and marked as a failed mini-batch to trigger retry.|
+|ParallelRunConfig.run_max_try|parallel_run_function.retry_settings.max_retries |The number of retries when mini-batch is failed or timeout. If all retries are failed, the mini-batch will be marked as failed to be counted by mini_batch_error_threshold calculation.|
+|ParallelRunConfig.append_row_file_name |parallel_run_function.append_row_to | Combined with `append_row_to` setting.|
+|ParallelRunConfig.allowed_failed_count|parallel_run_function.mini_batch_error_threshold |The number of failed mini batches that could be ignored in this parallel job. If the count of failed mini-batch is higher than this threshold, the parallel job will be marked as failed.<br><br>"-1" is the default number, which means to ignore all failed mini-batch during parallel job.|
+|ParallelRunConfig.allowed_failed_percent|parallel_run_function.task.program_arguments set <br>`--allowed_failed_percent`|Similar to "allowed_failed_count" but this setting uses the percent of failed mini-batches instead of the mini-batch failure count.<br><br>The range of this setting is [0, 100]. "100" is the default number, which means to ignore all failed mini-batch during parallel job.|
+|ParallelRunConfig.partition_keys| _Under development._ | |
+|ParallelRunConfig.environment_variables|parallel_run_function.environment_variables |A dictionary of environment variables names and values. These environment variables are set on the process where user script is being executed.|
+|ParallelRunStep.name|parallel_run_function.name |Name of the parallel job or component created.|
+|ParallelRunStep.inputs|parallel_run_function.inputs|A dict of inputs used by this parallel.|
+|--|parallel_run_function.input_data| Declare the data to be split and processed with parallel|
+|ParallelRunStep.output|parallel_run_function.outputs|The outputs of this parallel job.|
+|ParallelRunStep.side_inputs|parallel_run_function.inputs|Defined together with `inputs`.|

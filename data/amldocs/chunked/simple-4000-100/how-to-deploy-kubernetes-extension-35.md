@@ -1,0 +1,20 @@
+   - The workaround to meet your cross-subscription requirement is to first connect AKS to Azure-ARC and then attach this ARC-Kubernetes resource.
+
+
+## Review AzureML extension configuration settings
+
+You can use AzureML CLI command `k8s-extension create` to deploy AzureML extension. CLI `k8s-extension create` allows you to specify a set of configuration settings in `key=value` format using `--config` or `--config-protected` parameter. Following is the list of available configuration settings to be specified during AzureML extension deployment.
+
+|Configuration Setting Key Name  |Description  |Training |Inference |Training and Inference
+   |--|--|--|--|--|
+   |`enableTraining` |`True` or `False`, default `False`. **Must** be set to `True` for AzureML extension deployment with Machine Learning model training and batch scoring support.  |  **&check;**| N/A |  **&check;** |
+   | `enableInference` |`True` or `False`, default `False`.  **Must** be set to `True` for AzureML extension deployment with Machine Learning inference support. |N/A| **&check;** |  **&check;** |
+   | `allowInsecureConnections` |`True` or `False`, default `False`. **Can** be set to `True` to use inference HTTP endpoints for development or test purposes. |N/A| Optional |  Optional |
+   | `inferenceRouterServiceType` |`loadBalancer`, `nodePort` or `clusterIP`.  **Required** if `enableInference=True`. | N/A| **&check;** |   **&check;** |
+   | `internalLoadBalancerProvider` | This config is only applicable for Azure Kubernetes Service(AKS) cluster now. Set to `azure` to allow the inference router using internal load balancer.  | N/A| Optional |  Optional |
+   |`sslSecret`| The name of the Kubernetes secret in the `azureml` namespace. This config is used to store `cert.pem` (PEM-encoded TLS/SSL cert) and `key.pem` (PEM-encoded TLS/SSL key), which are required for inference HTTPS endpoint support when ``allowInsecureConnections`` is set to `False`. For a sample YAML definition of `sslSecret`, see [Configure sslSecret](./how-to-secure-kubernetes-online-endpoint.md#configure-sslsecret). Use this config or a combination of `sslCertPemFile` and `sslKeyPemFile` protected config settings. |N/A| Optional |  Optional |
+   |`sslCname` |An TLS/SSL CNAME is used by inference HTTPS endpoint. **Required** if `allowInsecureConnections=False`  |  N/A | Optional | Optional|
+   | `inferenceRouterHA` |`True` or `False`, default `True`. By default, AzureML extension will deploy three inference router replicas for high availability, which requires at least three worker nodes in a cluster. Set to `False` if your cluster has fewer than three worker nodes, in this case only one inference router service is deployed. | N/A| Optional |  Optional |
+   |`nodeSelector` | By default, the deployed kubernetes resources and your machine learning workloads are randomly deployed to one or more nodes of the cluster, and DaemonSet resources are deployed to ALL nodes. If you want to restrict the extension deployment and your training/inference workloads to specific nodes with label `key1=value1` and `key2=value2`, use `nodeSelector.key1=value1`, `nodeSelector.key2=value2` correspondingly. | Optional| Optional |  Optional |
+   |`installNvidiaDevicePlugin`  | `True` or `False`, default `False`. [NVIDIA Device Plugin](https://github.com/NVIDIA/k8s-device-plugin#nvidia-device-plugin-for-kubernetes) is required for ML workloads on NVIDIA GPU hardware. By default, AzureML extension deployment won't install NVIDIA Device Plugin regardless Kubernetes cluster has GPU hardware or not. User can specify this setting to `True`, to install it, but make sure to fulfill [Prerequisites](https://github.com/NVIDIA/k8s-device-plugin#prerequisites). | Optional |Optional |Optional |
+   |`installPromOp`|`True` or `False`, default `True`. AzureML extension needs prometheus operator to manage prometheus. Set to `False` to reuse the existing prometheus operator. For more information about reusing the existing  prometheus operator, refer to [reusing the prometheus operator](./how-to-troubleshoot-kubernetes-extension.md#prometheus-operator)| Optional| Optional |  Optional |

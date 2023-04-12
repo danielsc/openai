@@ -1,0 +1,160 @@
+
+
+# [Python](#tab/python)
+[!INCLUDE [sdk v2](../../includes/machine-learning-sdk-v2.md)]
+
+Create the rule definition: 
+
+```python
+rule_scale_out_endpoint = ScaleRule(
+    metric_trigger = MetricTrigger(
+        metric_name="RequestLatency",
+        metric_resource_uri = endpoint.id, 
+        time_grain = datetime.timedelta(minutes = 1),
+        statistic = "Average",
+        operator = "GreaterThan", 
+        time_aggregation = "Last",
+        time_window = datetime.timedelta(minutes = 5), 
+        threshold = 70
+    ), 
+    scale_action = ScaleAction(
+        direction = "Increase", 
+        type = "ChangeCount", 
+        value = 1, 
+        cooldown = datetime.timedelta(hours = 1)
+    )
+)
+
+```
+This rule's `metric_resource_uri` field now refers to the endpoint rather than the deployment.
+
+Update the `my-scale-settings` profile to include this rule: 
+
+```python 
+mon_client.autoscale_settings.create_or_update(
+    resource_group, 
+    autoscale_settings_name, 
+    parameters = {
+        "location" : endpoint.location,
+        "target_resource_uri" : deployment.id,
+        "profiles" : [
+            AutoscaleProfile(
+                name="my-scale-settings",
+                capacity={
+                    "minimum" : 2, 
+                    "maximum" : 5,
+                    "default" : 2
+                },
+                rules = [
+                    rule_scale_out, 
+                    rule_scale_in,
+                    rule_scale_out_endpoint
+                ]
+            )
+        ]
+    }
+)
+``` 
+
+# [Studio](#tab/azure-studio)
+
+From the bottom of the page, select __+ Add a scale condition__.
+
+Select __Scale based on metric__, and then select __Add a rule__. The __Scale rule__ page is displayed. Use the following information to populate the fields on this page:
+
+* Set __Metric source__ to __Other resource__.
+* Set __Resource type__ to __Machine Learning online endpoints__.
+* Set __Resource__ to your endpoint.
+* Set __Metric name__ to __Request latency__.
+* Set __Operator__ to __Greater than__ and set __Metric threshold__ to __70__.
+* Set __Duration (minutes)__ to __5__.
+* Set __Operation__ to __Increase count by__ and set __Instance count__ to 1
+
+:::image type="content" source="media/how-to-autoscale-endpoints/endpoint-rule.png" lightbox="media/how-to-autoscale-endpoints/endpoint-rule.png" alt-text="Screenshot showing endpoint metrics rules.":::
+
+
+## Create scaling rules based on a schedule
+
+You can also create rules that apply only on certain days or at certain times. In this example, the node count is set to 2 on the weekend.
+
+# [Azure CLI](#tab/azure-cli)
+
+[!INCLUDE [cli v2](../../includes/machine-learning-cli-v2.md)]
+
+```azurecli
+# Note: this is based on the deploy-managed-online-endpoint.sh: it just adds autoscale settings in the end
+set -e
+
+#set the endpoint name from the how-to-deploy excercise
+# <set_endpoint_deployment_name>
+# set your existing endpoint name
+ENDPOINT_NAME=your-endpoint-name
+DEPLOYMENT_NAME=blue
+# </set_endpoint_deployment_name>
+
+export ENDPOINT_NAME=autoscale-endpt-`echo $RANDOM`
+
+# create endpoint and deployment
+az ml online-endpoint create --name $ENDPOINT_NAME -f endpoints/online/managed/sample/endpoint.yml
+az ml online-deployment create --name blue --endpoint $ENDPOINT_NAME -f endpoints/online/managed/sample/blue-deployment.yml --all-traffic
+az ml online-endpoint show -n $ENDPOINT_NAME
+
+# <set_other_env_variables>
+# ARM id of the deployment
+DEPLOYMENT_RESOURCE_ID=$(az ml online-deployment show -e $ENDPOINT_NAME -n $DEPLOYMENT_NAME -o tsv --query "id")
+# ARM id of the deployment. todo: change to --query "id"
+ENDPOINT_RESOURCE_ID=$(az ml online-endpoint show -n $ENDPOINT_NAME -o tsv --query "properties.\"azureml.onlineendpointid\"")
+# set a unique name for autoscale settings for this deployment. The below will append a random number to make the name unique.
+AUTOSCALE_SETTINGS_NAME=autoscale-$ENDPOINT_NAME-$DEPLOYMENT_NAME-`echo $RANDOM`
+# </set_other_env_variables>
+
+# create autoscale settings. Note if you followed the how-to-deploy doc example, the instance count would have been 1. Now after applying this poilcy, it will scale up 2 (since min count and count are 2).
+# <create_autoscale_profile>
+az monitor autoscale create \
+  --name $AUTOSCALE_SETTINGS_NAME \
+  --resource $DEPLOYMENT_RESOURCE_ID \
+  --min-count 2 --max-count 5 --count 2
+# </create_autoscale_profile>
+
+# Add rule to default profile: scale up if cpu util > 70 %
+# <scale_out_on_cpu_util>
+az monitor autoscale rule create \
+  --autoscale-name $AUTOSCALE_SETTINGS_NAME \
+  --condition "CpuUtilizationPercentage > 70 avg 5m" \
+  --scale out 2
+# </scale_out_on_cpu_util>
+
+# Add rule to default profile: scale down if cpu util < 25 %
+# <scale_in_on_cpu_util>
+az monitor autoscale rule create \
+  --autoscale-name $AUTOSCALE_SETTINGS_NAME \
+  --condition "CpuUtilizationPercentage < 25 avg 5m" \
+  --scale in 1
+# </scale_in_on_cpu_util>
+
+# add rule to default profile: scale up based on avg. request latency (endpoint metric)
+# <scale_up_on_request_latency>
+az monitor autoscale rule create \
+ --autoscale-name $AUTOSCALE_SETTINGS_NAME \
+ --condition "RequestLatency > 70 avg 5m" \
+ --scale out 1 \
+ --resource $ENDPOINT_RESOURCE_ID
+# </scale_up_on_request_latency>
+
+#create weekend profile: scale to 2 nodes in weekend
+# <weekend_profile>
+az monitor autoscale profile create \
+  --name weekend-profile \
+  --autoscale-name $AUTOSCALE_SETTINGS_NAME \
+  --min-count 2 --count 2 --max-count 2 \
+  --recurrence week sat sun --timezone "Pacific Standard Time" 
+# </weekend_profile>
+
+# <delete_endpoint>
+# delete the autoscaling profile
+az monitor autoscale delete -n "$AUTOSCALE_SETTINGS_NAME"
+
+# delete the endpoint
+az ml online-endpoint delete --name $ENDPOINT_NAME --yes --no-wait
+# </delete_endpoint>
+```

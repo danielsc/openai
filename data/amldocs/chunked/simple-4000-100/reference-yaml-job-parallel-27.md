@@ -1,0 +1,20 @@
+| `mini_batch_size` | string | Define the size of each mini-batch to split the input.<br><br> If the input_data is a folder or set of files, this number defines the **file count** for each mini-batch. For example, 10, 100.<br>If the input_data is a tabular data from `mltable`, this number defines the proximate physical size for each mini-batch. For example, 100 kb, 100 mb. ||1|
+| `mini_batch_error_threshold` | integer | Define the number of failed mini batches that could be ignored in this parallel job. If the count of failed mini-batch is higher than this threshold, the parallel job will be marked as failed.<br><br>Mini-batch is marked as failed if:<br> - the count of return from run() is less than mini-batch input count. <br> - catch exceptions in custom run() code.<br><br> "-1" is the default number, which means to ignore all failed mini-batch during parallel job.|[-1, int.max]|-1|
+| `logging_level` | string | Define which level of logs will be dumped to user log files. |INFO, WARNING, DEBUG|INFO|
+| `resources.instance_count` | integer | The number of nodes to use for the job. | | 1 |
+| `max_concurrency_per_instance` | integer| Define the number of processes on each node of compute.<br><br>For a GPU compute, the default value is 1.<br>For a CPU compute, the default value is the number of cores.|||
+| `retry_settings.max_retries` | integer | Define the number of retries when mini-batch is failed or timeout. If all retries are failed, the mini-batch will be marked as failed to be counted by `mini_batch_error_threshold` calculation. ||2|
+| `retry_settings.timeout` | integer | Define the timeout in seconds for executing custom run() function. If the execution time is higher than this threshold, the mini-batch will be aborted, and marked as a failed mini-batch to trigger retry.|(0, 259200]|60|
+| `environment_variables` | object | Dictionary of environment variable key-value pairs to set on the process where the command is executed. |||
+
+
+### Attributes of the `task` key
+
+| Key | Type | Description | Allowed values | Default value |
+| --- | ---- | ----------- | -------------- | ------------- |
+| `type` | const | **Required.** The type of task. Only applicable for `run_function` by now.<br><br> In `run_function` mode, you're required to provide `code`, `entry_script`, and `program_arguments` to define Python script with executable functions and arguments. Note: Parallel job only supports Python script in this mode. | run_function | run_function |
+| `code` | string | Local path to the source code directory to be uploaded and used for the job. |||
+| `entry_script` | string | The Python file that contains the implementation of pre-defined parallel functions. For more information, see [Prepare entry script to parallel job](). |||
+| `environment` | string or object | **Required** The environment to use for running the task. The value can be either a reference to an existing versioned environment in the workspace or an inline environment specification. <br><br> To reference an existing environment, use the `azureml:<environment_name>:<environment_version>` syntax or `azureml:<environment_name>@latest` (to reference the latest version of an environment). <br><br> To define an inline environment, follow the [Environment schema](reference-yaml-environment.md#yaml-syntax). Exclude the `name` and `version` properties as they aren't supported for inline environments.|||
+| `program_arguments` | string | The arguments to be passed to the entry script. May contain  "--\<arg_name\> ${{inputs.\<intput_name\>}}" reference to inputs or outputs.<br><br> Parallel job provides a list of predefined arguments to set configuration of parallel run. For more information, see [predefined arguments for parallel job](#predefined-arguments-for-parallel-job). |||
+| `append_row_to` | string | Aggregate all returns from each run of mini-batch and output it into this file. May reference to one of the outputs of parallel job by using the expression \${{outputs.<output_name>}} |||

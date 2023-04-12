@@ -1,0 +1,43 @@
+- `display_name` - the display name of the Spark job that should be displayed in the UI and elsewhere.
+- `code` - the location of the folder that contains source code and scripts for this job.
+- `entry` - the entry point for the job. It should be a dictionary that defines a file or a class entry point.
+- `py_files` - a list of `.zip`, `.egg`, or `.py` files to be placed in the `PYTHONPATH`, for successful execution of the job. This parameter is optional.
+- `jars` - a list of `.jar` files to include in the Spark driver and executor `CLASSPATH`, for successful execution of the job. This parameter is optional.
+- `files` - a list of files that should be copied to the working directory of each executor, for successful execution of the job. This parameter is optional.
+- `archives` - a list of archives that is automatically extracted and placed in the working directory of each executor, for successful execution of the job. This parameter is optional.
+- `conf` - a dictionary with pre-defined Spark configuration key-value pairs.
+- `driver_cores`: the number of cores allocated for the Spark driver.
+- `driver_memory`: the allocated memory for the Spark driver, with a size unit suffix `k`, `m`, `g` or `t` (for example, `512m`, `2g`).
+- `executor_cores`: the number of cores allocated for the Spark executor.
+- `executor_memory`: the allocated memory for the Spark executor, with a size unit suffix `k`, `m`, `g` or `t` (for example, `512m`, `2g`).
+- `dynamic_allocation_enabled` - a boolean parameter that defines whether or not executors should be allocated dynamically.
+  - If dynamic allocation of executors is enabled, then define these parameters:
+    - `dynamic_allocation_min_executors` - the minimum number of Spark executors instances for dynamic allocation.
+    - `dynamic_allocation_max_executors` - the maximum number of Spark executors instances for dynamic allocation.
+  - If dynamic allocation of executors is disabled, then define these parameters:
+    - `executor_instances` - the number of Spark executor instances.
+    - `environment` - the Azure Machine Learning environment that will run the job. This parameter should pass:
+      - an object of `azure.ai.ml.entities.Environment`, or an Azure Machine Learning environment name (string).
+- `args` - the command line arguments that should be passed to the job entry point Python script or class. See the sample code provided here for an example.
+- `resources` - the resources to be used by an Azure Machine Learning Managed (Automatic) Spark compute. This parameter should pass a dictionary with:
+  - `instance_type` - a key that defines the compute instance type to be used for the Managed (Automatic) Spark compute. The following instance types are currently supported:
+    - `Standard_E4S_V3`
+    - `Standard_E8S_V3`
+    - `Standard_E16S_V3`
+    - `Standard_E32S_V3`
+    - `Standard_E64S_V3`
+  - `runtime_version` - a key that defines the Spark runtime version. The following Spark runtime versions are currently supported:
+    - `3.1.0`
+    - `3.2.0`
+- `compute` - the name of an attached Synapse Spark pool.
+- `inputs` - the inputs for the Spark job. This parameter should pass a dictionary with mappings of the input data bindings used in the job. This dictionary has these values:
+  - a dictionary key defines the input name
+  - a corresponding value may be:
+    - a literal value: integer, number, boolean or string.
+    - an object of class `azure.ai.ml.Input`, with the following parameters:
+      - `type` - set this parameter to `uri_file` or `uri_folder`, for input data contained in a file or a folder respectively.
+      - `path` - the URI of the input data, such as `azureml://`, `abfss://`, or `wasbs://`.
+      - `mode` - set this parameter to `direct`.
+- `outputs` - the outputs for the Spark job. This parameter should pass a dictionary with mappings of the output data bindings used in the job. This dictionary has these values:
+  - a dictionary key defines the output name
+  - a corresponding value is an object of class `azure.ai.ml.Output`, with the following parameters:

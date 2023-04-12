@@ -1,0 +1,2 @@
+- [AzureML inference router and connectivity requirements](./how-to-kubernetes-inference-routing-azureml-fe.md)
+- [Secure AKS inferencing environment](./how-to-secure-kubernetes-inferencing-environment.md)

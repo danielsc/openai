@@ -1,0 +1,3 @@
+- For a reference of the logs and metrics, see [Monitoring Azure Machine Learning data reference](monitor-resource-reference.md).
+- For information on working with quotas related to Azure Machine Learning, see [Manage and request quotas for Azure resources](how-to-manage-quotas.md).
+- For details on monitoring Azure resources, see [Monitoring Azure resources with Azure Monitor](../azure-monitor/essentials/monitor-azure-resource.md).
