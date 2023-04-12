@@ -155,6 +155,7 @@ if __name__ == "__main__":
                 result["context"] = json.load(f)
 
         log_json_artifact(result, "result.json")
+        
     # save scores to --score output json file
     with open(args.score, "w") as f:
         json.dump(result, f, indent=4)
