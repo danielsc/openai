@@ -10,7 +10,8 @@ inputs:
     path: ./data/amldocs/questions/validation.csv
   top: 3
   chain_type: stuff
-
+  meta_prompt: ./data/amldocs/prompts/rag_concise.md
+  
 outputs:
   scores:
     type: uri_file
@@ -21,6 +22,7 @@ command: >-
   --top ${{inputs.top}}
   --chain_type ${{inputs.chain_type}}
   --scores ${{outputs.scores}}
+  --meta_prompt ${{inputs.meta_prompt}}
 
 compute: azureml:cpu-cluster
 

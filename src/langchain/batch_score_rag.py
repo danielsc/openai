@@ -38,6 +38,12 @@ if __name__ == "__main__":
     questions = df["question"].tolist()
     scores = []
     context_artifact_name = "cog_search_docs.json"
+    if args.meta_prompt:
+        # load meta_prompt from file
+        with open(args.meta_prompt, "r") as f:
+            meta_prompt = f.read()
+    else:
+        meta_prompt = None
 
     for i, question in enumerate(questions):
         # Start a child run
@@ -50,7 +56,7 @@ if __name__ == "__main__":
 
             result = rag(question, top=args.top, chain_type=args.chain_type, 
                          context_artifact_name=context_artifact_name,
-                         meta_prompt=args.meta_prompt, verbose=verbose)
+                         meta_prompt=meta_prompt, verbose=verbose)
 
             # load the cog_search context back from MLFlow 
             if verbose:

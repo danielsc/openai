@@ -7,7 +7,7 @@ openai.api_key = os.environ["OPENAI_API_KEY"]
 
 import mlflow
 import json
-import os
+import os, re
 from patch import log_json_artifact
 from langchain import PromptTemplate
 from langchain.schema import HumanMessage, AIMessage, SystemMessage
@@ -114,12 +114,21 @@ from patch import patch_langchain, log_function_call
 def robust_result_parse(result, conversation_context):
     try: 
         result_dict = json.loads(result.content)
-        return result_dict
     except Exception as e:
         print("Error parsing result json", e)
         print(result.content)
-        return {"error": f"Error parsing result json: {e}", "result": result.content}
-    
+        pattern = r"\"rating_out_of_10\":\s*(.*?)\n"
+        result_dict = conversation_context
+        rating = re.search(pattern, result.content)
+        if rating:
+            rating = rating.group(1)
+        else:   
+            rating = None
+        result_dict["rating_out_of_10"] = rating
+        result_dict["error"] = f"Error parsing result json: {e}"
+
+    return result_dict
+  
 
 def groundedness(conversation_context, meta_prompt, verbose: bool = False): 
 

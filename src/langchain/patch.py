@@ -16,7 +16,10 @@ def serialize(obj):
     elif isinstance(obj, dict):
         serialized_dict = {}
         for key, value in obj.items():
-            serialized_dict[key] = serialize(value)
+            if "key" in key.lower():
+                serialized_dict[key] = "********"
+            else:
+                serialized_dict[key] = serialize(value)
         return serialized_dict
 
     # Handle lists and tuples

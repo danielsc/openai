@@ -18,7 +18,17 @@ import json
 import tempfile
 import os
 from patch import log_json_artifact
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
+system_template = """Use the following pieces of context to answer the users question. 
+If you don't know the answer, just say that you don't know, don't try to make up an answer.
+----------------
+{context}
+"""
 
 class CognitiveSearchRetriever(BaseRetriever):
     def __init__(self, endpoint: str, index_name: str, searchkey: str, top: int = 3, context_artifact_name: str = "cog_search_docs.json", verbose: bool = False):
@@ -60,6 +70,7 @@ class CognitiveSearchRetriever(BaseRetriever):
     async def aget_relevant_documents(self, query: str) -> List[Document]:
         pass
 
+from langchain import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain.chat_models import AzureChatOpenAI
 from patch import patch_langchain, log_function_call
@@ -75,6 +86,15 @@ def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str
             cog_search_patched = True
             CognitiveSearchRetriever.get_relevant_documents = log_function_call(CognitiveSearchRetriever.get_relevant_documents)
         
+    if meta_prompt is None:
+        meta_prompt = system_template
+
+    messages = [
+        SystemMessagePromptTemplate.from_template(meta_prompt),
+        HumanMessagePromptTemplate.from_template("{question}"),
+    ]
+    CHAT_PROMPT = ChatPromptTemplate.from_messages(messages)
+
 
     search_endpoint = os.environ["COG_SEARCH_ENDPOINT"]
     index_name = "amldocs"
@@ -90,6 +110,7 @@ def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str
 
     qa = RetrievalQA.from_chain_type(llm=llm, 
                                     chain_type=chain_type,
+                                    chain_type_kwargs=dict(prompt=CHAT_PROMPT),
                                     retriever=retriever)
     return qa(question)
 
@@ -112,7 +133,14 @@ if __name__ == "__main__":
         mlflow.log_param("chain_type", args.chain_type)
         mlflow.log_param("meta_prompt", args.meta_prompt)
 
-    result = rag(args.question, top=args.top, chain_type=args.chain_type, meta_prompt=args.meta_prompt, verbose=verbose)
+    if args.meta_prompt:
+        # load meta_prompt from file
+        with open(args.meta_prompt, "r") as f:
+            meta_prompt = f.read()
+    else:
+        meta_prompt = None
+
+    result = rag(args.question, top=args.top, chain_type=args.chain_type, meta_prompt=meta_prompt, verbose=verbose)
     
     if verbose:
         log_json_artifact(result, "result.json")
