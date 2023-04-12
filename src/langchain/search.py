@@ -8,6 +8,6 @@ searchkey = os.environ["COG_SEARCH_KEY"]
 
 client = SearchClient(endpoint=endpoint, index_name=index_name, credential=AzureKeyCredential(searchkey))
 
-for i in client.search("pipelines", top=1):
+for i in client.search("virtual machines", top=1):
     print(i['sourcefile'])
     print(i['content'])

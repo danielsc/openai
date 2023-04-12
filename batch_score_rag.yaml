@@ -2,6 +2,8 @@ $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 
 code: src/langchain/
 
+experiment_name: langchain_rag
+
 inputs:
   questions:
     type: uri_file
