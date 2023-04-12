@@ -9,3 +9,4 @@ conda.yml
 data/2feature/**
 .vscode/launch.json
 .env
+launch.json
