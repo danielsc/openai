@@ -10,8 +10,10 @@ inputs:
     path: ./data/amldocs/questions/validation.csv
   top: 3
   chain_type: stuff
-  meta_prompt: ./data/amldocs/prompts/rag_concise.md
-  
+  meta_prompt: 
+    type: uri_file
+    path: ./data/amldocs/prompts/rag_concise.md
+
 outputs:
   scores:
     type: uri_file

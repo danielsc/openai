@@ -122,9 +122,12 @@ if __name__ == "__main__":
     parser.add_argument("--chain_type", type=str, default="stuff")
     parser.add_argument("--meta_prompt", type=str, default=None)
     parser.add_argument("--no-log", action='store_true')
+    parser.add_argument("--score", type=str, default="./data/amldocs/scores/single_score.json")
+
     args = parser.parse_args()
 
     verbose = not args.no_log
+    context_artifact_name = "cog_search_docs.json"
 
     if verbose:
         # mlflow.start_run()
@@ -140,10 +143,21 @@ if __name__ == "__main__":
     else:
         meta_prompt = None
 
-    result = rag(args.question, top=args.top, chain_type=args.chain_type, meta_prompt=meta_prompt, verbose=verbose)
+    result = rag(args.question, top=args.top, chain_type=args.chain_type, 
+                 context_artifact_name=context_artifact_name,
+                 meta_prompt=meta_prompt, verbose=verbose)
     
+    # load the cog_search context back from MLFlow 
     if verbose:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            artifact_local_path = mlflow.artifacts.download_artifacts(f"runs:/{mlflow.active_run().info.run_id}/{context_artifact_name}", dst_path=temp_dir)
+            with open(artifact_local_path, 'r') as f:
+                result["context"] = json.load(f)
+
         log_json_artifact(result, "result.json")
+    # save scores to --score output json file
+    with open(args.score, "w") as f:
+        json.dump(result, f, indent=4)
 
     print("Q:", result["query"])
     print("A:", result["result"])

@@ -76,7 +76,7 @@ if __name__ == "__main__":
     
             # save scores to --scores output json file
             with open(args.scores, "w") as f:
-                json.dump(scores, f)
+                json.dump(scores, f, indent=4)
         
 
 
