@@ -1,3 +1,6 @@
+from aml_keyvault import load_secrets
+load_secrets(["OPENAI_API_KEY", "OPENAI_API_BASE", "COG_SEARCH_KEY", "COG_SEARCH_ENDPOINT"])
+
 # set up openai api
 import openai, os
 openai.api_type = "azure"
@@ -155,7 +158,7 @@ if __name__ == "__main__":
                 result["context"] = json.load(f)
 
         log_json_artifact(result, "result.json")
-        
+
     # save scores to --score output json file
     with open(args.score, "w") as f:
         json.dump(result, f, indent=4)

@@ -1,0 +1,25 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+
+name: batch_score_groundedness
+
+code: src/langchain/
+
+inputs:
+  conversation_contexts:
+    type: uri_file
+  meta_prompt: 
+    type: uri_file
+
+outputs:
+  scores:
+    type: uri_file
+
+command: >-
+  python batch_groundedness.py
+  --conversation_contexts ${{inputs.conversation_contexts}}
+  --meta_prompt ${{inputs.meta_prompt}}
+  --scores ${{outputs.scores}}
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: conda.yml

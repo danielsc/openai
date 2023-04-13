@@ -1,3 +1,6 @@
+from aml_keyvault import load_secrets
+load_secrets(["OPENAI_API_KEY", "OPENAI_API_BASE"])
+
 # set up openai api
 import openai, os
 openai.api_type = "azure"
@@ -114,6 +117,8 @@ from patch import patch_langchain, log_function_call
 def robust_result_parse(result, conversation_context):
     try: 
         result_dict = json.loads(result.content)
+        rating = result_dict["rating_out_of_10"]
+        assert isinstance(rating, int)
     except Exception as e:
         print("Error parsing result json", e)
         print(result.content)
@@ -121,10 +126,14 @@ def robust_result_parse(result, conversation_context):
         result_dict = conversation_context
         rating = re.search(pattern, result.content)
         if rating:
-            rating = rating.group(1)
+            try:
+                rating = int(rating.group(1))
+            except Exception:
+                rating = 0
         else:   
-            rating = None
-        result_dict["rating_out_of_10"] = rating
+            rating = 0
+
+        result_dict["rating_out_of_10"] = int(rating)
         result_dict["error"] = f"Error parsing result json: {e}"
 
     return result_dict

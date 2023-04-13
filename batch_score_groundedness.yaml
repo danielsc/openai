@@ -1,0 +1,29 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+code: src/langchain/
+
+experiment_name: langchain_groundedness
+
+inputs:
+  conversation_contexts:
+    type: uri_file
+    path: ./data/amldocs/scores/rag-scores-default-prompt.json
+  meta_prompt: 
+    type: uri_file
+    path: ./data/amldocs/prompts/groundedness_default.md
+
+outputs:
+  scores:
+    type: uri_file
+
+command: >-
+  python batch_groundedness.py
+  --conversation_contexts ${{inputs.conversation_contexts}}
+  --meta_prompt ${{inputs.meta_prompt}}
+  --scores ${{outputs.scores}}
+
+compute: azureml:cpu-cluster
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: conda.yml

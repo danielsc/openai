@@ -3,9 +3,7 @@ How to update an existing azureml environment using AzureML SDK V2?
 Generate a Python Code Sample to create an environment from conda specification using AzureML SDK V2?
 How to use Tensorboard to see job output using AzureML SDK V2?
 How do I deploy a model in AzureML using CLI V2 and Managed Inferencing ?
-Code Sample to create a datastore and use it in sweep Job using AzureML SDK V2?
 generate a python code samples to debug a failed job using Vscode and AZureML SDK V2?
-Code Samples to create an MLTable and use it in a sweep job  using AzureML SDK V2?
 How can I see progress of an online endpoint deploying in AzureML using CLI V2 ?
 How can I setup an online endpoint in AzureML inside my virtual network using CLI V2 ?
 Code Samples to create an MLTable and use it in a Pipeline Job using AzureML SDK V2?
