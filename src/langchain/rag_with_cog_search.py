@@ -10,6 +10,7 @@ cog_search_patched = False
 # set up cog search retriever
 from langchain.docstore.document import Document
 from langchain.schema import BaseRetriever, Document
+from langchain.callbacks.base import CallbackManager
 from typing import List
 from azure.search.documents import SearchClient
 from azure.core.credentials import AzureKeyCredential
@@ -53,7 +54,7 @@ class CognitiveSearchRetriever(BaseRetriever):
     def get_relevant_documents(self, query: str) -> List[Document]:
         docs = []
         for i in self.client.search(query, top=self.top):
-            docs.append(Document(page_content=i['content'], metadata={"sourcefile": i['sourcefile']}))
+            docs.append(Document(page_content=i['content'], metadata={"sourcefile": i.get('sourcefile', '')}))
         if self.verbose:
             print("cog_search_top:", self.top)
             print("cog_search_query:", query)
@@ -76,7 +77,8 @@ from langchain.chat_models import AzureChatOpenAI
 from patch import patch_langchain, log_function_call
 
 def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str = None, 
-        context_artifact_name: str = "cog_search_docs.json", verbose: bool = False): 
+        context_artifact_name: str = "cog_search_docs.json", verbose: bool = False,
+        streaming_callback_manager: CallbackManager = None): 
     global cog_search_patched
 
     if verbose:
@@ -97,16 +99,21 @@ def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str
 
 
     search_endpoint = os.environ["COG_SEARCH_ENDPOINT"]
-    index_name = "amldocs"
+    index_name = os.environ.get("COG_SEARCH_INDEX", "amldocs")
     searchkey = os.environ["COG_SEARCH_KEY"]
     retriever = CognitiveSearchRetriever(search_endpoint, index_name, searchkey, top=top, 
                                          context_artifact_name=context_artifact_name, verbose=verbose)
 
-    llm = AzureChatOpenAI(
+    llm_kwargs = dict(
         deployment_name="gpt-35-turbo",
         temperature=0,
         openai_api_version="2023-03-15-preview",
+        verbose=True,
     )
+    if streaming_callback_manager:
+        llm_kwargs["streaming"] = True
+        llm_kwargs["callback_manager"] = streaming_callback_manager
+    llm = AzureChatOpenAI(**llm_kwargs)
 
     qa = RetrievalQA.from_chain_type(llm=llm, 
                                     chain_type=chain_type,
