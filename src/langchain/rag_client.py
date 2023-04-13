@@ -33,7 +33,7 @@ def on_close(ws, close_status_code, close_msg):
     _print(f"### closed: {close_status_code} {close_msg}")
 
 def on_open(ws):
-    _print("### opened")
+    _print("### opened: Ctrl-C to end")
 
 
 if __name__ == "__main__":
@@ -45,13 +45,7 @@ if __name__ == "__main__":
                                     on_close=on_close)
     client.run_forever(dispatcher=rel, reconnect=5)
     rel.signal(2, rel.abort)
-    while True:
-        try:
-            question = input("Question: ")
-            req = json.dumps({"question": question})
-            client.send(req)
-        except KeyboardInterrupt:
-            break
+    question = input("Question: ")
+    req = json.dumps({"question": question})
+    client.send(req)
     rel.dispatch()
-        
-
