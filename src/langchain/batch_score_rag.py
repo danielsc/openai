@@ -1,7 +1,7 @@
 # set up openai api
 import openai, os
 import pandas as pd
-from rag_with_cog_search import rag
+from rag_with_cog_search import rag, parse_prompt_templates
 from patch import log_json_artifact
 import mlflow, json, tempfile
 
@@ -38,12 +38,22 @@ if __name__ == "__main__":
     questions = df["question"].tolist()
     scores = []
     context_artifact_name = "cog_search_docs.json"
+
     if args.meta_prompt:
         # load meta_prompt from file
         with open(args.meta_prompt, "r") as f:
             meta_prompt = f.read()
+
+        if meta_prompt.startswith("Content-Type: multipart/mixed;"):
+            # if meta_prompt is a multipart mime file, split it into system and user templates
+            system_template, user_template = parse_prompt_templates(meta_prompt)
+        else:
+            # otherwise, assume it's a single template
+            system_template = meta_prompt
+            user_template = None
     else:
-        meta_prompt = None
+        system_template = None
+        user_template = None
 
     for i, question in enumerate(questions):
         # Start a child run
@@ -57,7 +67,7 @@ if __name__ == "__main__":
             try:
                 result = rag(question, top=args.top, chain_type=args.chain_type, 
                             context_artifact_name=context_artifact_name,
-                            meta_prompt=meta_prompt, verbose=verbose)
+                            system_template=system_template, user_template=user_template, verbose=verbose)
                 
                 # load the cog_search context back from MLFlow 
                 if verbose:

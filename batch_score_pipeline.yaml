@@ -12,7 +12,7 @@ inputs:
   top: 3  
   rag_meta_prompt: 
     type: uri_file
-    path: azureml:prompt-rag-concise-md:1
+    path: azureml:prompt-rag-brief-mime:1
   groundedness_meta_prompt: 
     type: uri_file
     path: azureml:prompt-groundedness-default-md:1

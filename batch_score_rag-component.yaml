@@ -1,6 +1,8 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
 
 name: batch_score_rag
+version: 3
+
 code: src/langchain/
 
 inputs:

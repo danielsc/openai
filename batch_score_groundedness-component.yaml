@@ -1,7 +1,7 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
 
 name: batch_score_groundedness
-
+version: 3
 code: src/langchain/
 
 inputs:
