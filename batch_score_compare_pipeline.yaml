@@ -1,0 +1,69 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+
+experiment_name: langchain_pipeline
+settings:
+  default_compute: azureml:cpu-cluster
+
+inputs: 
+  questions:
+    type: uri_file
+    path: ./data/amldocs/questions/validation.csv
+  rag_meta_prompt_a: 
+    type: uri_file
+    path: data/amldocs/prompts/rag_brief.mime
+  rag_meta_prompt_b: 
+    type: uri_file
+    path: data/amldocs/prompts/rag_default.md
+  groundedness_meta_prompt: 
+    type: uri_file
+    path: data/amldocs/prompts/groundedness_default.md
+
+jobs:
+  rag_a:
+    type: command
+    component: batch_score_rag-component.yaml
+    inputs:
+      questions: ${{parent.inputs.questions}}
+      top: 3
+      meta_prompt: ${{parent.inputs.rag_meta_prompt_a}}
+    outputs:
+      scores: 
+        
+  groundedness_a:
+    type: command
+    component: batch_score_groundedness-component.yaml
+    inputs:
+      conversation_contexts: ${{parent.jobs.rag_a.outputs.scores}}
+      meta_prompt: ${{parent.inputs.groundedness_meta_prompt}}
+    outputs:
+      scores: 
+
+  rag_b:
+    type: command
+    component: batch_score_rag-component.yaml
+    inputs:
+      questions: ${{parent.inputs.questions}}
+      top: 3
+      meta_prompt: ${{parent.inputs.rag_meta_prompt_b}}
+    outputs:
+      scores: 
+
+  groundedness_b:
+    type: command
+    component: batch_score_groundedness-component.yaml
+    inputs:
+      conversation_contexts: ${{parent.jobs.rag_b.outputs.scores}}
+      meta_prompt: ${{parent.inputs.groundedness_meta_prompt}}
+    outputs:
+      scores: 
+  
+  compare:
+    type: command
+    component: batch_compare_scores-component.yaml
+    inputs:
+      option_a_scores: ${{parent.jobs.rag_a.outputs.scores}}
+      option_b_scores: ${{parent.jobs.rag_b.outputs.scores}}
+    outputs:
+      scores:
+      labelling_project_folder: 

@@ -16,3 +16,6 @@ dependencies:
     - langchain
     - matplotlib
     - azure-search-documents==11.4.0b3
+    - fastapi==0.95.0 
+    - websocket-client==1.5.1 
+    - rel==0.4.8

@@ -50,6 +50,7 @@ class StreamingLLMCallbackHandler(StreamingStdOutCallbackHandler):
 
     def on_llm_new_token(self, token: str, **kwargs: Any) -> Any:
         # TODO: Create async callback handler
+        print(token, end="")
         resp = {"token": token}
         asyncio.ensure_future(self.websocket.send_json(resp))
 

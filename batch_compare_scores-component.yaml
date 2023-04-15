@@ -1,33 +1,26 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
 
-name: batch_score_rag
-version: 4
-
+name: batch_compare_scores
 code: src/langchain/
 
 inputs:
-  questions:
+  option_a_scores:
     type: uri_file
-  top: 
-    type: integer
-    default: 3
-  chain_type: 
-    type: string
-    default: stuff
-  meta_prompt: 
+  option_b_scores:
     type: uri_file
 
 outputs:
   scores:
     type: uri_file
+  labelling_project_folder:
+    type: uri_folder
 
 command: >-
-  python batch_score_rag.py
-  --questions ${{inputs.questions}}
-  --top ${{inputs.top}}
-  --chain_type ${{inputs.chain_type}}
+  python batch_compare_scores.py
+  --option_a_scores ${{inputs.option_a_scores}}
+  --option_b_scores ${{inputs.option_b_scores}}
   --scores ${{outputs.scores}}
-  --meta_prompt ${{inputs.meta_prompt}}
+  --labelling_project_folder ${{outputs.labelling_project_folder}}
 
 environment:
   image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
