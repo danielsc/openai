@@ -1,3 +1,6 @@
+from aml_keyvault import load_secrets
+load_secrets(["OPENAI_API_KEY", "OPENAI_API_BASE", "COG_SEARCH_KEY", "COG_SEARCH_ENDPOINT"])
+
 # set up openai api
 import openai, os
 openai.api_type = "azure"
@@ -25,11 +28,59 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
 )
 
-system_template = """Use the following pieces of context to answer the users question. 
+default_system_template = """Use the following pieces of context to answer the users question. 
 If you don't know the answer, just say that you don't know, don't try to make up an answer.
 ----------------
 {context}
 """
+
+default_user_template = "{question}"
+
+def parse_prompt_templates(text: str):
+    from email.parser import BytesParser
+
+    system_template = None
+    user_template = None
+
+    # Parse the message using the BytesParser
+    msg = BytesParser().parsebytes(text.encode('utf-8'))
+
+    # Iterate over the parts of the message
+    for part in msg.walk():
+        print(part.get_filename())
+        # Check if this part has a filename attribute and that it matches the expected name
+        if part.get_filename() == 'system_template.md':
+            # This is the first part, do something with it
+            system_template = part.get_payload(decode=True).decode('utf-8')
+            # Do something with the data
+        elif part.get_filename() == 'user_template.md':
+            # This is the second part, do something with it
+            user_template = part.get_payload(decode=True).decode('utf-8')
+            # Do something with the data
+
+    assert system_template is not None
+    assert user_template is not None
+
+    return(system_template, user_template)
+
+def load_prompt_templates(meta_prompt: str):
+    if meta_prompt:
+        # load meta_prompt from file
+        with open(args.meta_prompt, "r") as f:
+            meta_prompt = f.read()
+
+        if meta_prompt.startswith("Content-Type: multipart/mixed;"):
+            # if meta_prompt is a multipart mime file, split it into system and user templates
+            system_template, user_template = parse_prompt_templates(meta_prompt)
+        else:
+            # otherwise, assume it's a single template
+            system_template = meta_prompt
+            user_template = None
+    else:
+        system_template = None
+        user_template = None
+
+    return system_template, user_template
 
 class CognitiveSearchRetriever(BaseRetriever):
     def __init__(self, endpoint: str, index_name: str, searchkey: str, top: int = 3, context_artifact_name: str = "cog_search_docs.json", verbose: bool = False):
@@ -76,7 +127,7 @@ from langchain.chains import RetrievalQA
 from langchain.chat_models import AzureChatOpenAI
 from patch import patch_langchain, log_function_call
 
-def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str = None, 
+def rag(question: str, top: int = 3, chain_type: str = "stuff", system_template: str = None, user_template: str = None,  
         context_artifact_name: str = "cog_search_docs.json", verbose: bool = False,
         streaming_callback_manager: CallbackManager = None): 
     global cog_search_patched
@@ -88,12 +139,14 @@ def rag(question: str, top: int = 3, chain_type: str = "stuff", meta_prompt: str
             cog_search_patched = True
             CognitiveSearchRetriever.get_relevant_documents = log_function_call(CognitiveSearchRetriever.get_relevant_documents)
         
-    if meta_prompt is None:
-        meta_prompt = system_template
+    if system_template is None:
+        system_template = default_system_template
+    if user_template is None:
+        user_template = default_user_template
 
     messages = [
-        SystemMessagePromptTemplate.from_template(meta_prompt),
-        HumanMessagePromptTemplate.from_template("{question}"),
+        SystemMessagePromptTemplate.from_template(system_template),
+        HumanMessagePromptTemplate.from_template(user_template),
     ]
     CHAT_PROMPT = ChatPromptTemplate.from_messages(messages)
 
@@ -143,16 +196,11 @@ if __name__ == "__main__":
         mlflow.log_param("chain_type", args.chain_type)
         mlflow.log_param("meta_prompt", args.meta_prompt)
 
-    if args.meta_prompt:
-        # load meta_prompt from file
-        with open(args.meta_prompt, "r") as f:
-            meta_prompt = f.read()
-    else:
-        meta_prompt = None
+    system_template, user_template = load_prompt_templates(args.meta_prompt)
 
     result = rag(args.question, top=args.top, chain_type=args.chain_type, 
                  context_artifact_name=context_artifact_name,
-                 meta_prompt=meta_prompt, verbose=verbose)
+                 system_template=system_template, user_template=user_template, verbose=verbose)
     
     # load the cog_search context back from MLFlow 
     if verbose:
@@ -162,7 +210,7 @@ if __name__ == "__main__":
                 result["context"] = json.load(f)
 
         log_json_artifact(result, "result.json")
-        
+
     # save scores to --score output json file
     with open(args.score, "w") as f:
         json.dump(result, f, indent=4)

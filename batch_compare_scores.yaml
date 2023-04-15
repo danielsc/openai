@@ -1,0 +1,32 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+code: src/langchain/
+
+experiment_name: langchain_compare_scores
+
+inputs:
+  option_a_scores:
+    type: uri_file
+    path: ./data/amldocs/scores/rag-scores-brief-prompt.json
+  option_b_scores:
+    type: uri_file
+    path: ./data/amldocs/scores/rag-scores-default-prompt.json
+
+outputs:
+  scores:
+    type: uri_file
+  labelling_project_folder:
+    type: uri_folder
+
+command: >-
+  python batch_compare_scores.py
+  --option_a_scores ${{inputs.option_a_scores}}
+  --option_b_scores ${{inputs.option_b_scores}}
+  --scores ${{outputs.scores}}
+  --labelling_project_folder ${{outputs.labelling_project_folder}}
+
+compute: azureml:cpu-cluster
+
+environment:
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
+  conda_file: conda.yml

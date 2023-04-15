@@ -1,0 +1,47 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+
+experiment_name: langchain_pipeline
+settings:
+  default_compute: azureml:cpu-cluster
+
+inputs: 
+  questions:
+    type: uri_file
+    path: ./data/amldocs/questions/validation.csv
+  top: 3  
+  rag_meta_prompt: 
+    type: uri_file
+    path: azureml:prompt-rag-brief-mime:1
+  groundedness_meta_prompt: 
+    type: uri_file
+    path: azureml:prompt-groundedness-default-md:1
+
+outputs:
+  rag_scores:
+    type: uri_file
+  groundedness_scores:
+    type: uri_file
+
+
+jobs:
+  rag:
+    type: command
+    component: batch_score_rag-component.yaml
+    inputs:
+      questions: ${{parent.inputs.questions}}
+      top: ${{parent.inputs.top}}
+      meta_prompt: ${{parent.inputs.rag_meta_prompt}}
+    outputs:
+      scores: ${{parent.outputs.rag_scores}}
+        
+  groundedness:
+    type: command
+    component: batch_score_groundedness-component.yaml
+    inputs:
+      conversation_contexts: ${{parent.jobs.rag.outputs.scores}}
+      meta_prompt: ${{parent.inputs.groundedness_meta_prompt}}
+    outputs:
+      scores: ${{parent.outputs.groundedness_scores}}
+
+    

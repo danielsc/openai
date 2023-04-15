@@ -1,0 +1,21 @@
+Content-Type: multipart/mixed; boundary="===============2401710236758687922=="
+MIME-Version: 1.0
+
+--===============2401710236758687922==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="system_template.md"
+Use the following pieces of context to answer the users question in a brief way. Don't use more than 100 words. 
+If you don't know the answer, just say that you don't know, don't try to make up an answer.
+----------------
+{context}
+--===============2401710236758687922==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="user_template.md"
+Please give a short answer to the following question. Remember to be brief and not use more than 100 words.
+And, do not make stuff up -- if you don't know the answer, just say so.
+{question}
+--===============2401710236758687922==--
