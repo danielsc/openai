@@ -204,3 +204,6 @@ Ada provides a 1024 dimensional embedding while davinci provides a 2048 dimensio
 
 Currently we don't offer embeddings for davinci or babbage on the AOAI service.
 
+<img width="896" alt="image" src="https://user-images.githubusercontent.com/8079390/232260953-03039db6-9f7f-42f8-b629-a7b0f12ae4c6.png">
+
+
