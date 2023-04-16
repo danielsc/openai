@@ -107,9 +107,9 @@ class CognitiveSearchRetriever(BaseRetriever):
         for i in self.client.search(query, top=self.top):
             docs.append(Document(page_content=i['content'], metadata={"sourcefile": i.get('sourcefile', '')}))
         if self.verbose:
-            print("cog_search_top:", self.top)
-            print("cog_search_query:", query)
-            print("cog_search_docs:", docs)
+            # print("cog_search_top:", self.top)
+            # print("cog_search_query:", query)
+            # print("cog_search_docs:", docs)
             mlflow.log_param("cog_search_top", self.top)
             mlflow.log_param("cog_search_query", query)
             docs_json = [{ 'page_content': doc.page_content, 'metadata': doc.metadata  } for doc in docs]

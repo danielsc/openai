@@ -74,7 +74,7 @@ def log_function_call(func):
         json_call['args'] = args
         json_call['kwargs'] = kwargs
         
-        print("json_call:", json_call)
+        #print("json_call:", json_call)
         log_yaml_artifact(json_call, f"{'-'.join([str(i) for i in counter])}_{func.__module__}_{func.__name__}_call.yaml")
         counter.append(0)
         try:
@@ -85,7 +85,7 @@ def log_function_call(func):
         finally:
             counter = counter[:-1]
             json_result = result
-            print("json_result:", json_result)
+            #print("json_result:", json_result)
             log_yaml_artifact(json_result, f"{'-'.join([str(i) for i in counter])}-{func.__module__}_{func.__name__}_result.yaml")
         return result
     return wrapper
