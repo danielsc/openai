@@ -1,8 +1,6 @@
 {
     "question": "how can I see the quota assigned to my workspace in the v2 cli?",
     "reply": "You can use the following Azure CLI command to view the quotas for your Machine Learning workspace:\n```\naz ml workspace compute show-quota --name <name> --resource-group <resource-group> [--compute-target <compute-target>] [--ids]\n```\n\nReplace `<name>` with the name of the Machine Learning workspace and `<resource-group>` with the resource group that contains the workspace. You can also add `--compute-target` and `--ids` options if you have specific requirements for viewing compute targets or identity information.",
-    "ungrounded_facts": [
-        "az ml workspace compute show-quota --name <name> --resource-group <resource-group> [--compute-target <compute-target>] [--ids]"
-    ],
+    "ungrounded_facts": [],
     "rating_out_of_10": 0
 }
