@@ -16,11 +16,13 @@ from langchain.schema import BaseRetriever, Document
 from langchain.callbacks.base import CallbackManager
 from typing import List
 from azure.search.documents import SearchClient
+from azure.search.documents.aio import SearchClient as AsyncSearchClient
 from azure.core.credentials import AzureKeyCredential
 import mlflow
 import json
 import tempfile
 import os
+import asyncio
 from patch import log_json_artifact
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -91,6 +93,7 @@ class CognitiveSearchRetriever(BaseRetriever):
         self.verbose = verbose
         self.context_artifact_name = context_artifact_name
         self.client = SearchClient(endpoint=endpoint, index_name=index_name, credential=AzureKeyCredential(searchkey))
+        self.async_client = AsyncSearchClient(endpoint=endpoint, index_name=index_name, credential=AzureKeyCredential(searchkey))
     
     def dict(self):
         return {
@@ -100,12 +103,12 @@ class CognitiveSearchRetriever(BaseRetriever):
             "top": self.top,
             "verbose": self.verbose,
             "context_artifact_name": self.context_artifact_name,
-        }   
-
-    def get_relevant_documents(self, query: str) -> List[Document]:
-        docs = []
-        for i in self.client.search(query, top=self.top):
-            docs.append(Document(page_content=i['content'], metadata={"sourcefile": i.get('sourcefile', '')}))
+        }
+    
+    def _clean_documents(self, query: str, docs: List[Document]) -> List[Document]:
+        cleaned_docs = []
+        for i in docs:
+            cleaned_docs.append(Document(page_content=i['content'], metadata={"sourcefile": i.get('sourcefile', '')}))
         if self.verbose:
             # print("cog_search_top:", self.top)
             # print("cog_search_query:", query)
@@ -116,18 +119,26 @@ class CognitiveSearchRetriever(BaseRetriever):
 
             # Write the dictionary to a temporary file
             log_json_artifact(docs_json, self.context_artifact_name)
+        return cleaned_docs
 
-        return docs
+    def get_relevant_documents(self, query: str) -> List[Document]:
+        docs = self.client.search(query, top=self.top)
+        return self._clean_documents(query, docs)
 
     async def aget_relevant_documents(self, query: str) -> List[Document]:
-        pass
+        docs = []
+        async with self.async_client:
+            results = await self.async_client.search(query, top=self.top)
+            async for i in results:
+                docs.append(i)
+        return self._clean_documents(query, docs)
 
 from langchain import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain.chat_models import AzureChatOpenAI
 from patch import patch_langchain, log_function_call
 
-def rag(question: str, top: int = 3, chain_type: str = "stuff", system_template: str = None, user_template: str = None,  
+async def rag(question: str, top: int = 3, chain_type: str = "stuff", system_template: str = None, user_template: str = None,  
         context_artifact_name: str = "cog_search_docs.json", verbose: bool = False,
         streaming_callback_manager: CallbackManager = None): 
     global cog_search_patched
@@ -172,6 +183,8 @@ def rag(question: str, top: int = 3, chain_type: str = "stuff", system_template:
                                     chain_type=chain_type,
                                     chain_type_kwargs=dict(prompt=CHAT_PROMPT),
                                     retriever=retriever)
+    if streaming_callback_manager:
+        return await qa.acall(question)
     return qa(question)
 
 if __name__ == "__main__":
@@ -198,10 +211,11 @@ if __name__ == "__main__":
 
     system_template, user_template = load_prompt_templates(args.meta_prompt)
 
-    result = rag(args.question, top=args.top, chain_type=args.chain_type, 
-                 context_artifact_name=context_artifact_name,
-                 system_template=system_template, user_template=user_template, verbose=verbose)
-    
+    coroutine = rag(args.question, top=args.top, chain_type=args.chain_type, 
+                    context_artifact_name=context_artifact_name,
+                    system_template=system_template, user_template=user_template, verbose=verbose)
+    result = asyncio.run(coroutine)
+
     # load the cog_search context back from MLFlow 
     if verbose:
         with tempfile.TemporaryDirectory() as temp_dir:

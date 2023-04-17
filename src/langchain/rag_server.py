@@ -4,7 +4,7 @@ import traceback
 from typing import Any
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from langchain.callbacks.base import CallbackManager
+from langchain.callbacks.base import CallbackManager, AsyncCallbackHandler, AsyncCallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from rag_with_cog_search import rag
@@ -19,7 +19,7 @@ app = FastAPI()
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     streaming_handler = StreamingLLMCallbackHandler(websocket)
-    streaming_manager = CallbackManager([streaming_handler])
+    streaming_manager = AsyncCallbackManager([streaming_handler])
     while True:
         try:
             req = await websocket.receive_text()
@@ -27,9 +27,9 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json(resp)
 
             req: dict = json.loads(req)
-            result = rag(req.get("question"), top=req.get("top", 3), streaming_callback_manager=streaming_manager)
+            result = await rag(req.get("question"), top=req.get("top", 3), streaming_callback_manager=streaming_manager)
             print("Q:", result["query"])
-            print("A:", result["result"])
+            print("A:", result["result"][:50] + "...")
 
             resp = {"token": END_TOKEN}
             await websocket.send_json(resp)
@@ -42,17 +42,17 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json({"token": ERR_TOKEN})
 
 
-class StreamingLLMCallbackHandler(StreamingStdOutCallbackHandler):
+class StreamingLLMCallbackHandler(AsyncCallbackHandler):
     """Callback handler for streaming LLM responses."""
 
     def __init__(self, websocket: WebSocket):
         self.websocket = websocket
 
-    def on_llm_new_token(self, token: str, **kwargs: Any) -> Any:
-        # TODO: Create async callback handler
+    async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
+        """Run on new LLM token. Only available when streaming is enabled."""
         print(token, end="")
         resp = {"token": token}
-        asyncio.ensure_future(self.websocket.send_json(resp))
+        await self.websocket.send_json(resp)
 
 
 if __name__ == "__main__":
