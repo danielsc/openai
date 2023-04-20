@@ -27,6 +27,7 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
+from mlflow_callback import MLflowCallbackHandler
 
 default_system_template = """Use the following pieces of context to answer the users question. 
 If you don't know the answer, just say that you don't know, don't try to make up an answer.
@@ -129,7 +130,7 @@ from patch import patch_langchain, log_function_call
 
 def rag(question: str, top: int = 3, chain_type: str = "stuff", system_template: str = None, user_template: str = None,  
         context_artifact_name: str = "cog_search_docs.json", verbose: bool = False,
-        streaming_callback_manager: CallbackManager = None): 
+        callback_manager: CallbackManager = None): 
     global cog_search_patched
 
     if verbose:
@@ -163,14 +164,15 @@ def rag(question: str, top: int = 3, chain_type: str = "stuff", system_template:
         openai_api_version="2023-03-15-preview",
         verbose=True,
     )
-    if streaming_callback_manager:
+    if callback_manager:
         llm_kwargs["streaming"] = True
-        llm_kwargs["callback_manager"] = streaming_callback_manager
+        llm_kwargs["callback_manager"] = callback_manager
+        
     llm = AzureChatOpenAI(**llm_kwargs)
 
     qa = RetrievalQA.from_chain_type(llm=llm, 
                                     chain_type=chain_type,
-                                    chain_type_kwargs=dict(prompt=CHAT_PROMPT),
+                                    chain_type_kwargs=dict(prompt=CHAT_PROMPT, callback_manager=callback_manager),
                                     retriever=retriever)
     return qa(question)
 
@@ -188,6 +190,7 @@ if __name__ == "__main__":
 
     verbose = not args.no_log
     context_artifact_name = "cog_search_docs.json"
+    callback_manager = None
 
     if verbose:
         # mlflow.start_run()
@@ -195,12 +198,16 @@ if __name__ == "__main__":
         mlflow.log_param("top", args.top)
         mlflow.log_param("chain_type", args.chain_type)
         mlflow.log_param("meta_prompt", args.meta_prompt)
+        callback_manager = CallbackManager([MLflowCallbackHandler()])
 
     system_template, user_template = load_prompt_templates(args.meta_prompt)
 
+
+
     result = rag(args.question, top=args.top, chain_type=args.chain_type, 
                  context_artifact_name=context_artifact_name,
-                 system_template=system_template, user_template=user_template, verbose=verbose)
+                 system_template=system_template, user_template=user_template, verbose=verbose,
+                 callback_manager=callback_manager)
     
     # load the cog_search context back from MLFlow 
     if verbose:
