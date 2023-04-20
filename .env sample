@@ -1,0 +1,6 @@
+MLFLOW_TRACKING_URI="azureml://<region>.api.azureml.ms/mlflow/v1.0/subscriptions/... (get this from the Azure Portal)"
+OPENAI_API_KEY="***"
+OPENAI_API_BASE="https://<resource_name>.openai.azure.com/ (get this from the Azure Portal)"
+SERPAPI_API_KEY="***"
+COG_SEARCH_ENDPOINT="https://<resource_name>.search.windows.net/ (get this from the Azure Portal)"
+COG_SEARCH_KEY="***"
