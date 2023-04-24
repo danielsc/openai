@@ -2,45 +2,85 @@
 
 import pyaudio
 import wave
+import os
+import time
+import asyncio
 
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 11_025 #44_100
-RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "output.wav"
+def get_temp_file():
+    folder = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(folder, 'recordings', f'{int(time.time())}.wav')
+    return filename
 
-p = pyaudio.PyAudio()
+async def record():
+    # record audio and return the filename
 
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
+    CHUNK = 1024
+    FORMAT = pyaudio.paInt16
+    CHANNELS = 1
+    RATE = 44_100
+    RECORD_SECONDS = 5
 
-print("* recording")
+    p = pyaudio.PyAudio()
 
-frames = []
+    stream = p.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
 
-for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    data = stream.read(CHUNK)
-    frames.append(data)
+    print("* recording")
 
-print("* done recording")
+    frames = []
 
-stream.stop_stream()
-stream.close()
-p.terminate()
+    for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+        data = stream.read(CHUNK)
+        frames.append(data)
 
-wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-wf.setnchannels(CHANNELS)
-wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(RATE)
-wf.writeframes(b''.join(frames))
-wf.close()
+    print("* done recording")
 
-print("Transcribing audio file...")
-import openai
-audio_file= open(WAVE_OUTPUT_FILENAME, "rb")
-transcript = openai.Audio.transcribe("whisper-1", audio_file)
-print(transcript)
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    filename = get_temp_file()
+    wf = wave.open(filename, 'wb')
+    wf.setnchannels(CHANNELS)
+    wf.setsampwidth(p.get_sample_size(FORMAT))
+    wf.setframerate(RATE)
+    wf.writeframes(b''.join(frames))
+    wf.close()
+    return filename
+
+async def transcribe(path):
+    # transcribe the audio file and return the transcript
+    filename = os.path.basename(path)
+    print(f"Transcribing audio file {filename}")
+    import openai
+    audio_file= open(path, "rb")
+    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    # extract filename from path
+    return filename + "| " + transcript.text
+
+async def main():
+    transcribe_future = None
+    # remember start time   
+    while True:
+        start_time = time.time()
+        filename = await record()
+        print(f'Audio saved to {filename}!')
+        
+        if transcribe_future:
+            print(f'waiting for transcription to complete ... ')
+            start_time = time.time()
+            text = (await transcribe_future)
+            print(f'Transcript: {text}')
+            transcribe_future = None
+            print(f"Elapsed time: {time.time() - start_time:.2f} seconds")
+
+        print("starting task ...")
+        start_time = time.time()
+        transcribe_future = asyncio.create_task(transcribe(filename))
+        print(f"Elapsed time: {time.time() - start_time:.2f} seconds")
+    
+
+if __name__ == '__main__':
+    asyncio.run(main())

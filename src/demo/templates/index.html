@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Transcription</title>
+</head>
+<body>
+    <h1>Audio Transcription using Whisper</h1>
+    <button id="record" onclick="toggleRecording()">Start Transcribing</button> <span id="status">&lt;- click to start</span>
+    <p><span id="log"></span></p>
+
+    <script>
+        let audioContext;
+        let bufferSize = 4096;
+        let recorder;
+        let isRecording = false;
+        let intervalId = null;
+
+        async function sendData(data) {
+            const response = await fetch('/send_audio', {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.transcript) {
+                let paragraph = document.createElement("p");
+                paragraph.textContent = result.transcript;
+                document.getElementById('log').appendChild(paragraph);
+            }
+        }
+
+        function toggleRecording() {
+            let button = document.getElementById('record');
+            let status = document.getElementById('status');
+
+            if (!isRecording) {
+                button.textContent = 'Stop Transcribing';
+                status.innerText = 'Listening & Transcribing ...'
+                startRecording();
+            } else {
+                button.textContent = 'Start Transcribing';
+                status.innerText = '<- click start to transcribe'
+                stopRecording();
+            }
+            isRecording = !isRecording;
+        }
+
+        function startRecording() {
+            audioContext = new AudioContext({ sampleRate: 44100 });
+
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                let input = audioContext.createMediaStreamSource(stream);
+                recorder = audioContext.createScriptProcessor(bufferSize, 1, 1);
+                let buffer = [];
+                let interval = 5000; // 5 seconds
+
+                recorder.onaudioprocess = function(event) {
+                    if (!isRecording) return;
+                    let data = event.inputBuffer.getChannelData(0);
+                    let intData = new Int16Array(data.length);
+                    for (let i = 0; i < data.length; i++) {
+                        intData[i] = data[i] * 32767;
+                    }
+                    buffer.push(intData.buffer);
+
+                    // Start the interval timer if it's not already started
+                    if (!intervalId) {
+                        intervalId = setInterval(sendBuffer, interval);
+                    }
+                };
+
+                function sendBuffer() {
+                    if (buffer.length > 0) {
+                        let totalLength = buffer.reduce((acc, cur) => acc + cur.byteLength, 0);
+                        console.log("Total length: " + totalLength)
+                        let mergedBuffer = new ArrayBuffer(totalLength);
+                        let intData = new Int16Array(mergedBuffer);
+                        let offset = 0;
+                        for (let i = 0; i < buffer.length; i++) {
+                        let cur = new Int16Array(buffer[i]);
+                        intData.set(cur, offset);
+                        offset += cur.length;
+                        }
+                        sendData(mergedBuffer);
+                        buffer = [];
+                    }
+                }
+
+                input.connect(recorder);
+                recorder.connect(audioContext.destination);
+            });
+        }
+
+        function stopRecording() {
+            recorder.disconnect();
+            audioContext.close();
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    </script>
+</body>
+</html>
