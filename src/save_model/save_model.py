@@ -1,4 +1,10 @@
 from pandas.core.frame import DataFrame
+import evaluate, os, sys
+
+code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "code")
+# Add the module directory to the Python path
+sys.path.append(code_dir)
+
 from openai_model import OpenAIModel
 import shutil, mlflow
 import mlflow.models 
@@ -6,7 +12,6 @@ import argparse
 import pandas as pd
 import yaml, os
 import numpy as np
-import evaluate, os
 import tempfile
 
 
@@ -82,7 +87,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("--deployment", default="data/5deployment")
   parser.add_argument("--model", default="data/6model/")
-  parser.add_argument("--test_data", default="data/1raw/yelp_test.csv")
+  parser.add_argument("--test_data", default="data/1raw/yelp_mini.csv")
   parser.add_argument("--prompt_column", default="text")
   parser.add_argument("--completion_column", default="stars")
   parser.add_argument("--metrics", default="data/6stats/metrics.yaml")

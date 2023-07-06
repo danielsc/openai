@@ -1,7 +1,16 @@
-import requests, os
+import sys, os
+import requests
+
+# Get the directory path of the current module
+module_dir = os.path.dirname(os.path.abspath(__file__))
+# Add the module directory to the Python path
+sys.path.append(module_dir)
+
 import mlflow, yaml
 import pandas as pd
 import time
+from aml_keyvault import load_secrets
+load_secrets(["OPENAI_API_KEY"])
 
 def load_yaml(filename):
   with open(filename, encoding='utf-8') as fh:
@@ -14,20 +23,6 @@ def parse_stars(completion: str) -> int:
   except:
     return 0
 
-def load_api_key(keyname = "openai-key"):
-  secret_value = os.getenv("OPENAI_API_KEY")
-  if secret_value is None:
-    try:
-      from azureml.core.run import _OfflineRun
-      from azureml.core import Run
-      run = Run.get_context()
-      secret_value = run.get_secret(name=keyname)
-    except Exception as e:
-      Exception("No OPENAI_API_KEY found in environment variables or keyvault", e)
-
-  return secret_value
-
-
 class OpenAIModel(mlflow.pyfunc.PythonModel):
   def load_context(self, context):
     deployment = load_yaml(context.artifacts['deployment'])
@@ -36,7 +31,7 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     self.deployment = deployment['id']
     self.endpoint = deployment['endpoint']
     self.scoring_parameters = deployment['scoring_parameters']
-    self.api_key = load_api_key(keyname = "openai-key")
+    self.api_key = os.getenv("OPENAI_API_KEY")
     
 
     if self.api_key is None:
@@ -101,15 +96,21 @@ class OpenAIModel(mlflow.pyfunc.PythonModel):
     return [parse_stars(completion) for completion in scores]
   
   def source_paths(self):
-    return [__file__]
+    python_files_dir = os.path.dirname(__file__)
+    # return all files in the folder with full path
+    return [os.path.join(python_files_dir, f) for f in os.listdir(python_files_dir)]
 
   def conda_path(self):
-    return os.path.join(os.path.dirname(__file__), "conda.yaml")
+    python_files_dir = os.path.dirname(__file__)
+    # get parent dir
+    parent_dir = os.path.dirname(python_files_dir)
+    return os.path.join(parent_dir, "conda.yaml")
 
 if __name__=="__main__":
   # just for testing
   import pathlib
   this_dir = pathlib.Path(os.path.realpath(__file__)).parent.resolve()
+  print("this_dir", this_dir)
   context = mlflow.pyfunc.PythonModelContext({'deployment':f'{this_dir}/../artifacts/MLArtifact.yaml'})
   model = OpenAIModel()
   model.load_context(context)

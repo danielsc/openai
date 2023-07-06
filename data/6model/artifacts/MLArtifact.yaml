@@ -1,7 +1,7 @@
 created_at: 1670855590
 endpoint: https://aoai.openai.azure.com/
-id: best-model
-model: babbage.ft-0e40b0ef930246ebb6c1f277d802407b
+id: text-babbage-001
+model: text-babbage-001
 object: deployment
 owner: organization-owner
 scale_settings:

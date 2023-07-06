@@ -4,7 +4,7 @@ import sys
 import websocket
 import rel
 
-SERVER_URI = "ws://127.0.0.1:9000/chat"
+SERVER_URI = "ws://127.0.0.1:9999/chat"
 BEGIN_TOKEN = "<|begin|>"
 END_TOKEN = "<|end|>"
 ERR_TOKEN = "<|err|>"
